@@ -1,5 +1,4 @@
 provider,category,total_amount_millions,dem_amount_millions,rep_amount_millions,dem_pct,rep_pct,party_lean,data_source,notes
-Waterfront Strategies,Digital Consulting / Media Buying,858.4,858.4,0.0,100.0,0.0,Democrat,OpenSecrets,"Top D media buying firm affiliated with GMMB; Future Forward PAC alone paid $383M"
 WinRed,Fundraising Platform,311.2,0.0,311.2,0.0,100.0,Republican,FEC API,"Primary R online fundraising platform; 99.4% from Trump committees"
 ActBlue,Fundraising Platform,296.9,296.9,0.0,100.0,0.0,Democrat,FEC API,"Primary D online fundraising platform; processes most small-dollar Dem donations"
 Targeted Victory,Digital Consulting / Media Buying,142.4,0.0,142.4,0.0,100.0,Republican,OpenSecrets,"Top R digital consulting firm; founded by Zac Moffatt"
