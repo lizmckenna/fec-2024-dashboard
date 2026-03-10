@@ -4,59 +4,67 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>2024 FEC Campaign Tech Spending Dashboard</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
 <style>
   :root {
-    --bg: #0a0e17; --surface: #111827; --surface2: #1a2332;
-    --border: rgba(255,255,255,0.06); --text: #f0f4f8; --muted: #94a3b8;
-    --dem: #2471a3; --demLight: #5dade2; --demDark: #1B4F72;
-    --rep: #cb4335; --repLight: #ec7063; --repDark: #922B21;
-    --sapphire: #1a5276; --ruby: #922b21; --emerald: #1e8449;
-    --amethyst: #6c3483; --topaz: #b7950b; --teal: #117a65;
-    --rose: #884ea0; --garnet: #78281f;
+    --bg: #0a0a0b; --surface: #111113; --surface2: #18181b; --surface3: #1f1f23;
+    --border: rgba(255,255,255,0.06); --border-hover: rgba(255,255,255,0.1);
+    --text: #fafafa; --muted: #a1a1aa; --dim: #71717a;
+    --accent: #5371ff; --accent-glow: rgba(83,113,255,0.15); --accent-subtle: rgba(83,113,255,0.08);
+    --dem: #4a90d9; --demLight: #6aabef; --demDark: #2d5f8a;
+    --rep: #d95555; --repLight: #ef7070; --repDark: #8a2d2d;
+    --emerald: #22c55e; --amethyst: #8b5cf6; --topaz: #eab308; --teal: #14b8a6;
+    --rose: #a855f7; --sapphire: #3b82f6; --garnet: #7f1d1d;
   }
   * { margin:0; padding:0; box-sizing:border-box; }
-  body { background:var(--bg); color:var(--text); font-family:'Inter',system-ui,-apple-system,sans-serif; line-height:1.5; }
-  a { color:var(--demLight); text-decoration:none; }
-  a:hover { text-decoration:underline; }
+  body { background:var(--bg); color:var(--text); font-family:'Inter',-apple-system,BlinkMacSystemFont,sans-serif;
+    line-height:1.6; -webkit-font-smoothing:antialiased; -moz-osx-font-smoothing:grayscale; }
+  a { color:var(--accent); text-decoration:none; }
+  a:hover { text-decoration:underline; text-decoration-thickness:1.5px; text-underline-offset:2.5px; }
 
-  .container { max-width:1260px; margin:0 auto; padding:20px 16px; }
+  .container { max-width:1200px; margin:0 auto; padding:clamp(16px,3vw,32px) clamp(12px,3vw,24px); }
 
   /* Header */
-  .header { text-align:center; padding:32px 20px; margin-bottom:24px;
-    background:linear-gradient(135deg, rgba(26,82,118,0.3), rgba(146,43,33,0.2));
-    border-radius:16px; border:1px solid var(--border); }
-  .header h1 { font-size:28px; font-weight:800;
-    background:linear-gradient(135deg,#60a5fa,#f472b6);
-    -webkit-background-clip:text; -webkit-text-fill-color:transparent; margin-bottom:6px; }
-  .header p { color:var(--muted); font-size:14px; }
-  .header .subtitle { font-size:12px; color:#64748b; margin-top:8px; }
+  .header { text-align:center; padding:clamp(24px,5vw,48px) clamp(16px,3vw,32px); margin-bottom:clamp(16px,3vw,28px);
+    background:var(--surface); border-radius:16px; border:1px solid var(--border); position:relative; overflow:hidden; }
+  .header::before { content:''; position:absolute; top:0; left:50%; transform:translateX(-50%); width:60%; height:100%;
+    background:radial-gradient(ellipse at 50% 0%, var(--accent-subtle) 0%, transparent 70%); pointer-events:none; }
+  .header h1 { font-size:clamp(22px,4vw,32px); font-weight:700; letter-spacing:-0.03em; line-height:1.1;
+    background:linear-gradient(135deg, #fafafa 0%, #a1a1aa 100%);
+    -webkit-background-clip:text; -webkit-text-fill-color:transparent; margin-bottom:8px; position:relative; }
+  .header p { color:var(--muted); font-size:clamp(12px,1.5vw,14px); position:relative; }
+  .header .subtitle { font-size:clamp(10px,1.2vw,12px); color:var(--dim); margin-top:8px; position:relative; }
 
   /* Tabs */
-  .tabs { display:flex; gap:6px; margin-bottom:20px; flex-wrap:wrap; justify-content:center; }
-  .tab { padding:8px 16px; border-radius:8px; cursor:pointer; font-size:13px; font-weight:600;
-    background:var(--surface); border:1px solid var(--border); color:var(--muted); transition:all .2s; }
-  .tab:hover { border-color:rgba(255,255,255,0.15); color:var(--text); }
-  .tab.active { background:linear-gradient(135deg,var(--sapphire),var(--amethyst));
-    color:#fff; border-color:transparent; }
+  .tabs { display:flex; gap:4px; margin-bottom:clamp(16px,3vw,24px); flex-wrap:nowrap; overflow-x:auto;
+    -webkit-overflow-scrolling:touch; scrollbar-width:none; padding-bottom:4px; }
+  .tabs::-webkit-scrollbar { display:none; }
+  .tab { padding:8px 16px; border-radius:8px; cursor:pointer; font-size:13px; font-weight:500;
+    background:transparent; border:1px solid var(--border); color:var(--dim); transition:all .2s ease;
+    white-space:nowrap; flex-shrink:0; }
+  .tab:hover { border-color:var(--border-hover); color:var(--muted); background:var(--surface); }
+  .tab.active { background:var(--accent); color:#fff; border-color:transparent; font-weight:600; }
 
   /* Cards */
   .card { background:var(--surface); border:1px solid var(--border); border-radius:12px;
-    padding:20px; margin-bottom:16px; }
-  .card h2 { font-size:17px; font-weight:700; margin-bottom:12px; }
-  .card h3 { font-size:14px; font-weight:600; margin-bottom:8px; color:var(--muted); }
+    padding:clamp(16px,2.5vw,24px); margin-bottom:16px; transition:border-color .2s ease; }
+  .card:hover { border-color:var(--border-hover); }
+  .card h2 { font-size:clamp(14px,1.8vw,17px); font-weight:600; margin-bottom:12px; letter-spacing:-0.02em; }
+  .card h3 { font-size:13px; font-weight:600; margin-bottom:8px; color:var(--muted); }
 
   /* Grid */
   .grid2 { display:grid; grid-template-columns:1fr 1fr; gap:16px; }
   .grid3 { display:grid; grid-template-columns:1fr 1fr 1fr; gap:16px; }
-  @media(max-width:768px) { .grid2,.grid3 { grid-template-columns:1fr; } }
 
   /* KPI row */
-  .kpi-row { display:flex; gap:12px; margin-bottom:20px; flex-wrap:wrap; justify-content:center; }
-  .kpi { flex:1; min-width:150px; padding:16px; border-radius:12px;
-    background:var(--surface); border:1px solid var(--border); text-align:center; }
-  .kpi .value { font-size:24px; font-weight:800; }
-  .kpi .label { font-size:11px; color:var(--muted); text-transform:uppercase; letter-spacing:0.5px; margin-top:4px; }
+  .kpi-row { display:flex; gap:clamp(8px,1.5vw,12px); margin-bottom:clamp(16px,2.5vw,20px); flex-wrap:wrap; }
+  .kpi { flex:1; min-width:clamp(100px,20vw,150px); padding:clamp(12px,2vw,18px); border-radius:12px;
+    background:var(--surface); border:1px solid var(--border); text-align:center; transition:border-color .2s ease; }
+  .kpi:hover { border-color:var(--border-hover); }
+  .kpi .value { font-size:clamp(18px,3vw,26px); font-weight:700; letter-spacing:-0.02em; }
+  .kpi .label { font-size:10px; color:var(--dim); text-transform:uppercase; letter-spacing:0.5px; margin-top:4px; font-weight:500; }
 
   /* Chart containers */
   .chart-box { position:relative; width:100%; }
@@ -64,23 +72,23 @@
 
   /* Tables */
   table { width:100%; border-collapse:collapse; font-size:13px; }
-  th { text-align:left; padding:8px 10px; border-bottom:2px solid rgba(255,255,255,0.1);
-    color:var(--muted); font-size:11px; text-transform:uppercase; letter-spacing:0.5px; }
-  td { padding:8px 10px; border-bottom:1px solid rgba(255,255,255,0.04); }
+  th { text-align:left; padding:8px 10px; border-bottom:1px solid var(--border-hover);
+    color:var(--dim); font-size:10px; text-transform:uppercase; letter-spacing:0.5px; font-weight:600; }
+  td { padding:8px 10px; border-bottom:1px solid var(--border); }
   tr:hover td { background:rgba(255,255,255,0.02); }
 
   /* Badges */
-  .badge { display:inline-block; padding:2px 8px; border-radius:4px; font-size:11px; font-weight:600; }
-  .badge-dem { background:rgba(36,113,163,0.2); color:var(--demLight); }
-  .badge-rep { background:rgba(203,67,53,0.2); color:var(--repLight); }
-  .badge-both { background:rgba(108,52,131,0.2); color:#bb8fce; }
+  .badge { display:inline-block; padding:2px 8px; border-radius:100px; font-size:10px; font-weight:600; letter-spacing:0.02em; }
+  .badge-dem { background:rgba(74,144,217,0.15); color:var(--demLight); }
+  .badge-rep { background:rgba(217,85,85,0.15); color:var(--repLight); }
+  .badge-both { background:rgba(139,92,246,0.15); color:#a78bfa; }
 
   /* Source tags */
-  .source-tag { display:inline-block; padding:1px 6px; border-radius:3px; font-size:10px;
-    background:rgba(255,255,255,0.05); color:#64748b; margin-left:4px; }
+  .source-tag { display:inline-block; padding:1px 6px; border-radius:100px; font-size:10px; font-weight:500;
+    background:rgba(255,255,255,0.04); color:var(--dim); margin-left:4px; }
 
-  /* Bar */
-  .split-bar { display:flex; height:20px; border-radius:4px; overflow:hidden; }
+  /* Split bar */
+  .split-bar { display:flex; height:16px; border-radius:8px; overflow:hidden; }
   .split-bar .dem-part { background:var(--dem); }
   .split-bar .rep-part { background:var(--rep); }
 
@@ -88,47 +96,70 @@
   .section { display:none; }
   .section.active { display:block; }
 
-  /* Coverage card */
+  /* Coverage */
   .coverage-item { display:flex; align-items:center; gap:12px; margin-bottom:10px; }
-  .coverage-bar-bg { flex:1; height:10px; background:rgba(255,255,255,0.05); border-radius:5px; position:relative; }
-  .coverage-bar-fill { height:100%; border-radius:5px; transition:width .5s; }
-  .coverage-label { font-size:12px; min-width:160px; }
+  .coverage-bar-bg { flex:1; height:8px; background:rgba(255,255,255,0.04); border-radius:4px; position:relative; }
+  .coverage-bar-fill { height:100%; border-radius:4px; transition:width .5s ease; }
+  .coverage-label { font-size:12px; min-width:160px; color:var(--muted); }
   .coverage-pct { font-size:12px; font-weight:700; min-width:50px; text-align:right; }
 
-  /* Tooltip footnotes */
-  .footnote { font-size:11px; color:#64748b; margin-top:12px; line-height:1.6; }
-  .footnote strong { color:#94a3b8; }
+  /* Footnotes */
+  .footnote { font-size:11px; color:var(--dim); margin-top:12px; line-height:1.6; }
+  .footnote strong { color:var(--muted); }
 
-  /* Callout */
+  /* Callouts */
   .callout { padding:14px 18px; border-radius:10px; margin-bottom:16px; font-size:13px; line-height:1.6; }
-  .callout-blue { background:rgba(36,113,163,0.1); border-left:3px solid var(--dem); }
-  .callout-red { background:rgba(203,67,53,0.1); border-left:3px solid var(--rep); }
-  .callout-purple { background:rgba(108,52,131,0.1); border-left:3px solid var(--amethyst); }
-  .callout-amber { background:rgba(183,149,11,0.1); border-left:3px solid var(--topaz); }
+  .callout-blue { background:rgba(74,144,217,0.08); border-left:3px solid var(--dem); }
+  .callout-red { background:rgba(217,85,85,0.08); border-left:3px solid var(--rep); }
+  .callout-purple { background:rgba(139,92,246,0.08); border-left:3px solid var(--amethyst); }
+  .callout-amber { background:rgba(234,179,8,0.06); border-left:3px solid var(--topaz); }
 
   /* Insight banner */
-  .insight-banner { padding:20px 24px; border-radius:12px; margin-bottom:20px; font-size:13px; line-height:1.7;
-    background:linear-gradient(135deg, rgba(108,52,131,0.15), rgba(26,82,118,0.1));
-    border:1px solid rgba(108,52,131,0.3); }
-  .insight-banner .insight-title { font-size:15px; font-weight:700; margin-bottom:8px; color:#bb8fce; }
+  .insight-banner { padding:clamp(16px,3vw,24px); border-radius:12px; margin-bottom:20px; font-size:13px; line-height:1.7;
+    background:var(--surface); border:1px solid var(--border); position:relative; overflow:hidden; }
+  .insight-banner::before { content:''; position:absolute; top:0; left:0; right:0; height:3px;
+    background:linear-gradient(90deg, var(--accent), var(--amethyst)); }
+  .insight-banner .insight-title { font-size:14px; font-weight:600; margin-bottom:8px; color:var(--accent); letter-spacing:-0.01em; }
 
   /* Annotation note */
   .annotation-note { padding:14px 18px; border-radius:10px; margin-bottom:16px; font-size:13px; line-height:1.6;
-    background:rgba(183,149,11,0.08); border:1px solid rgba(183,149,11,0.2); color:var(--muted); }
+    background:rgba(234,179,8,0.04); border:1px solid rgba(234,179,8,0.12); color:var(--muted); }
   .annotation-note strong { color:var(--topaz); }
 
-  /* Insight cards for detailed analysis */
-  .insight-card { background:var(--surface2); border:1px solid var(--border); border-radius:12px;
-    padding:18px 20px; margin-bottom:12px; }
-  .insight-card h4 { font-size:14px; font-weight:700; margin-bottom:6px; }
+  /* Insight cards */
+  .insight-card { background:var(--surface); border:1px solid var(--border); border-radius:12px;
+    padding:18px 20px; margin-bottom:12px; transition:border-color .2s ease; }
+  .insight-card:hover { border-color:var(--border-hover); }
+  .insight-card h4 { font-size:14px; font-weight:600; margin-bottom:6px; letter-spacing:-0.01em; }
   .insight-card p { font-size:13px; color:var(--muted); line-height:1.6; margin:0; }
 
   /* Methodology grid */
   .meth-grid { display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-top:16px; }
-  @media(max-width:768px) { .meth-grid { grid-template-columns:1fr; } }
-  .meth-item { padding:14px 16px; border-radius:10px; font-size:13px; line-height:1.6; border:1px solid var(--border); background:var(--surface); }
-  .meth-item .meth-pct { font-size:22px; font-weight:800; margin-bottom:2px; }
-  .meth-item .meth-label { font-weight:700; font-size:12px; text-transform:uppercase; letter-spacing:0.5px; margin-bottom:6px; color:var(--muted); }
+  .meth-item { padding:14px 16px; border-radius:10px; font-size:13px; line-height:1.6;
+    border:1px solid var(--border); background:var(--surface); transition:border-color .2s ease; }
+  .meth-item:hover { border-color:var(--border-hover); }
+  .meth-item .meth-pct { font-size:22px; font-weight:700; margin-bottom:2px; letter-spacing:-0.02em; }
+  .meth-item .meth-label { font-weight:600; font-size:10px; text-transform:uppercase; letter-spacing:0.5px; margin-bottom:6px; color:var(--dim); }
+
+  /* ===== RESPONSIVE ===== */
+  @media(max-width:768px) {
+    .grid2, .grid3 { grid-template-columns:1fr; }
+    .meth-grid { grid-template-columns:1fr; }
+    .coverage-item { flex-wrap:wrap; gap:6px; }
+    .coverage-label { min-width:100%; font-size:11px; }
+    .coverage-pct { min-width:auto; }
+    table { font-size:12px; }
+    th, td { padding:6px 8px; }
+  }
+  @media(max-width:480px) {
+    .kpi { min-width:calc(50% - 8px); }
+    .kpi .value { font-size:18px; }
+    .kpi .label { font-size:9px; }
+    .tab { padding:8px 12px; font-size:12px; }
+    .callout, .insight-card, .annotation-note { padding:12px 14px; font-size:12px; }
+    .insight-banner { padding:14px 16px; font-size:12px; }
+    .split-bar { height:12px; }
+  }
 </style>
 </head>
 <body>
@@ -243,7 +274,7 @@
   <div class="kpi-row">
     <div class="kpi"><div class="value" style="color:var(--amethyst);">$1.9B</div><div class="label">Total Online Ads (4 platforms)</div></div>
     <div class="kpi"><div class="value" style="color:var(--dem);">$1.35B</div><div class="label">Google + Meta Ads</div></div>
-    <div class="kpi"><div class="value" style="color:var(--demLight);">3:1</div><div class="label">D vs R Digital Ad Ratio</div></div>
+    <div class="kpi"><div class="value" style="color:var(--accent);">3:1</div><div class="label">D vs R Digital Ad Ratio</div></div>
     <div class="kpi"><div class="value" style="color:var(--topaz);">$96M</div><div class="label">FEC Direct to Platforms</div></div>
   </div>
   <div class="grid2" style="margin-bottom:16px;">
@@ -327,7 +358,7 @@
     <h2>What's Included vs What's Missing</h2>
     <div class="grid2">
       <div>
-        <h3 style="color:#27ae60;">Included (24 vendors, ~$2.5B tracked)</h3>
+        <h3 style="color:var(--emerald);">Included (24 vendors, ~$2.5B tracked)</h3>
         <table>
           <tr><td>Fundraising Platforms</td><td style="text-align:right;font-weight:700;">$643.8M</td><td><span class="source-tag">FEC API</span></td></tr>
           <tr><td>Digital Consulting / Media Buying</td><td style="text-align:right;font-weight:700;">$1,093.6M</td><td><span class="source-tag">OpenSecrets</span></td></tr>
@@ -481,9 +512,9 @@ const matchups = [
 // ============================================================
 // CHART DEFAULTS
 // ============================================================
-Chart.defaults.color = '#94a3b8';
+Chart.defaults.color = '#a1a1aa';
 Chart.defaults.borderColor = 'rgba(255,255,255,0.06)';
-Chart.defaults.font.family = "'Inter',system-ui,sans-serif";
+Chart.defaults.font.family = "'Inter',-apple-system,BlinkMacSystemFont,sans-serif";
 Chart.defaults.font.size = 12;
 Chart.defaults.plugins.legend.labels.usePointStyle = true;
 Chart.defaults.plugins.legend.labels.pointStyle = 'circle';
@@ -517,7 +548,7 @@ document.querySelectorAll('.tab').forEach(t => {
 
   // KPIs
   document.getElementById('kpi-row').innerHTML = [
-    { val: fmtKPI(totalAll), label:'Total Tracked Spending', color:'var(--amethyst)' },
+    { val: fmtKPI(totalAll), label:'Total Tracked Spending', color:'var(--accent)' },
     { val: fmtKPI(totalDem), label:'Democratic Spending', color:'var(--dem)' },
     { val: fmtKPI(totalRep), label:'Republican Spending', color:'var(--rep)' },
     { val: providers.length, label:'Vendors Tracked', color:'var(--topaz)' },
@@ -531,8 +562,8 @@ document.querySelectorAll('.tab').forEach(t => {
     data: {
       labels: top12.map(p => p.name),
       datasets: [
-        { label:'Democrat', data:top12.map(p => p.dem), backgroundColor:'rgba(36,113,163,0.8)' },
-        { label:'Republican', data:top12.map(p => p.rep), backgroundColor:'rgba(203,67,53,0.8)' },
+        { label:'Democrat', data:top12.map(p => p.dem), backgroundColor:'rgba(74,144,217,0.8)' },
+        { label:'Republican', data:top12.map(p => p.rep), backgroundColor:'rgba(217,85,85,0.8)' },
       ]
     },
     options: {
@@ -554,8 +585,8 @@ document.querySelectorAll('.tab').forEach(t => {
     data: {
       labels: catArr.map(c => c.name),
       datasets: [
-        { label:'Democrat', data:catArr.map(c => c.dem), backgroundColor:'rgba(36,113,163,0.8)' },
-        { label:'Republican', data:catArr.map(c => c.rep), backgroundColor:'rgba(203,67,53,0.8)' },
+        { label:'Democrat', data:catArr.map(c => c.dem), backgroundColor:'rgba(74,144,217,0.8)' },
+        { label:'Republican', data:catArr.map(c => c.rep), backgroundColor:'rgba(217,85,85,0.8)' },
       ]
     },
     options: {
@@ -570,7 +601,7 @@ document.querySelectorAll('.tab').forEach(t => {
     type:'doughnut',
     data: {
       labels:['Democrat','Republican'],
-      datasets:[{ data:[totalDem, totalRep], backgroundColor:['rgba(36,113,163,0.85)','rgba(203,67,53,0.85)'], borderWidth:0 }]
+      datasets:[{ data:[totalDem, totalRep], backgroundColor:['rgba(74,144,217,0.85)','rgba(217,85,85,0.85)'], borderWidth:0 }]
     },
     options: {
       responsive:true, cutout:'55%',
@@ -583,21 +614,21 @@ document.querySelectorAll('.tab').forEach(t => {
   const coreRep = totalRep;
   document.getElementById('partyInsights').innerHTML = `
     <div style="margin-bottom:16px;">
-      <div style="font-size:13px;color:var(--muted);margin-bottom:6px;">Democrat Total</div>
-      <div style="font-size:28px;font-weight:800;color:var(--dem);">${fmtKPI(totalDem)}</div>
+      <div style="font-size:12px;color:var(--dim);margin-bottom:4px;text-transform:uppercase;letter-spacing:0.5px;font-weight:500;">Democrat Total</div>
+      <div style="font-size:clamp(22px,4vw,30px);font-weight:700;color:var(--dem);letter-spacing:-0.02em;">${fmtKPI(totalDem)}</div>
       <div style="font-size:12px;color:var(--muted);">${((totalDem/totalAll)*100).toFixed(0)}% of tracked spending</div>
     </div>
     <div style="margin-bottom:16px;">
-      <div style="font-size:13px;color:var(--muted);margin-bottom:6px;">Republican Total</div>
-      <div style="font-size:28px;font-weight:800;color:var(--rep);">${fmtKPI(totalRep)}</div>
+      <div style="font-size:12px;color:var(--dim);margin-bottom:4px;text-transform:uppercase;letter-spacing:0.5px;font-weight:500;">Republican Total</div>
+      <div style="font-size:clamp(22px,4vw,30px);font-weight:700;color:var(--rep);letter-spacing:-0.02em;">${fmtKPI(totalRep)}</div>
       <div style="font-size:12px;color:var(--muted);">${((totalRep/totalAll)*100).toFixed(0)}% of tracked spending</div>
     </div>
-    <div style="padding:10px 14px;border-radius:8px;background:rgba(108,52,131,0.1);border:1px solid rgba(108,52,131,0.2);margin-bottom:10px;">
-      <div style="font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:4px;">Core Tech (excl. Waterfront $858M)</div>
-      <div style="font-size:12px;line-height:1.5;">
+    <div style="padding:12px 14px;border-radius:10px;background:var(--surface2);border:1px solid var(--border);">
+      <div style="font-size:10px;color:var(--dim);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:6px;font-weight:600;">Core Tech (excl. Waterfront $858M)</div>
+      <div style="font-size:13px;line-height:1.5;">
         <span style="color:var(--demLight);font-weight:700;">D: $${Math.round(coreDem)}M</span> &nbsp;vs&nbsp;
         <span style="color:var(--repLight);font-weight:700;">R: $${Math.round(coreRep)}M</span>
-        &mdash; <span style="color:var(--muted);">much closer than the headline suggests</span>
+        <span style="color:var(--dim);"> &mdash; much closer than the headline suggests</span>
       </div>
     </div>
   `;
@@ -613,7 +644,7 @@ document.querySelectorAll('.tab').forEach(t => {
     const repPct = p.total > 0 ? (p.rep/p.total)*100 : 0;
     const badgeClass = p.party === 'D' ? 'badge-dem' : p.party === 'R' ? 'badge-rep' : 'badge-both';
     html += `<tr>
-      <td style="color:var(--muted)">${i+1}</td>
+      <td style="color:var(--dim)">${i+1}</td>
       <td style="font-weight:600">${p.name}</td>
       <td style="font-size:12px;color:var(--muted)">${p.cat}</td>
       <td style="text-align:right;font-weight:700">${fmtM(p.total)}</td>
@@ -637,8 +668,8 @@ document.querySelectorAll('.tab').forEach(t => {
     data: {
       labels: matchups.map(m => m.cat),
       datasets: [
-        { label:'Democrat', data: matchups.map(m => m.dVal), backgroundColor:'rgba(36,113,163,0.85)' },
-        { label:'Republican', data: matchups.map(m => -m.rVal), backgroundColor:'rgba(203,67,53,0.85)' },
+        { label:'Democrat', data: matchups.map(m => m.dVal), backgroundColor:'rgba(74,144,217,0.85)' },
+        { label:'Republican', data: matchups.map(m => -m.rVal), backgroundColor:'rgba(217,85,85,0.85)' },
       ]
     },
     options: {
@@ -657,7 +688,7 @@ document.querySelectorAll('.tab').forEach(t => {
       <p>WinRed ($311M) + Anedot ($29M) + Revv ($7M) = $347M vs ActBlue&rsquo;s $297M. Republicans have a $50M advantage in online fundraising infrastructure. Anedot is especially popular with down-ballot R candidates &mdash; 50+ House/Senate campaigns use it.</p>
     </div>
     <div class="insight-card" style="border-left:3px solid var(--amethyst);">
-      <h4 style="color:#bb8fce;">CRM / Voter Data: Dems Centralize, GOP Fragments</h4>
+      <h4 style="color:#a78bfa;">CRM / Voter Data: Dems Centralize, GOP Fragments</h4>
       <p>NGP VAN ($79M) + EveryAction ($29M) = $108M all flowing to one parent company (Bonterra). Republicans distribute across Data Trust ($7M) + i360 ($4.3M) + Campaign Sidekick + Advantage = ~$15M visible in FEC. But R data infra is heavily subsidized &mdash; Koch network funds i360, and Data Trust is partially funded through RNC infrastructure. The $108M vs $15M gap overstates the actual capability difference. Data Trust served 5,000+ campaigns in 2024; i360 covers 270M voter profiles.</p>
     </div>
     <div class="insight-card" style="border-left:3px solid var(--dem);">
@@ -665,7 +696,7 @@ document.querySelectorAll('.tab').forEach(t => {
       <p>Scale to Win ($51M) + Hustle ($1.5M) = $53M vs RumbleUp $2.3M. This is the single biggest asymmetry in the data. Democrats invested heavily in peer-to-peer texting as a primary voter contact channel. Scale to Win charges ~2 cents per text.</p>
     </div>
     <div class="insight-card" style="border-left:3px solid var(--amethyst);">
-      <h4 style="color:#bb8fce;">Digital Consulting: Money Follows Different Paths</h4>
+      <h4 style="color:#a78bfa;">Digital Consulting: Money Follows Different Paths</h4>
       <p>Democrat spending routes through fewer, larger firms: Waterfront Strategies ($858M) and Bully Pulpit ($116M). Republican spending is spread across Targeted Victory ($142M), Majority Strategies ($33M), Push Digital ($30M), Axiom Strategies ($14M). This reflects different party structures &mdash; Democrats centralize ad buying through GMMB/Waterfront, while Republicans use a more competitive vendor market.</p>
     </div>
     <div class="insight-card" style="border-left:3px solid var(--rep);">
@@ -680,9 +711,9 @@ document.querySelectorAll('.tab').forEach(t => {
 // ============================================================
 (() => {
   const vendorColors = {
-    actblue:'rgba(36,113,163,0.85)', winred:'rgba(203,67,53,0.85)',
-    anedot:'rgba(236,112,99,0.85)', everyaction:'rgba(39,174,96,0.85)',
-    ngpvan:'rgba(142,68,173,0.85)', revv:'rgba(211,84,0,0.85)',
+    actblue:'rgba(74,144,217,0.85)', winred:'rgba(217,85,85,0.85)',
+    anedot:'rgba(239,112,112,0.85)', everyaction:'rgba(34,197,94,0.85)',
+    ngpvan:'rgba(139,92,246,0.85)', revv:'rgba(234,179,8,0.85)',
   };
 
   new Chart(document.getElementById('chartCandidates'), {
@@ -717,7 +748,7 @@ document.querySelectorAll('.tab').forEach(t => {
     type:'doughnut',
     data: {
       labels: abData.map(d=>d.name),
-      datasets:[{ data:abData.map(d=>d.value), backgroundColor:['#1B4F72','#2471a3','#5dade2','#2980b9','#1abc9c'], borderWidth:0 }]
+      datasets:[{ data:abData.map(d=>d.value), backgroundColor:['#2d5f8a','#4a90d9','#6aabef','#3b82f6','#14b8a6'], borderWidth:0 }]
     },
     options: { responsive:true, cutout:'50%', plugins:{ tooltip:{ callbacks:{ label:ctx => ctx.label+': '+fmtM(ctx.raw) }}}}
   });
@@ -731,7 +762,7 @@ document.querySelectorAll('.tab').forEach(t => {
     type:'doughnut',
     data: {
       labels: wrData.map(d=>d.name),
-      datasets:[{ data:wrData.map(d=>d.value), backgroundColor:['#cb4335','#ec7063'], borderWidth:0 }]
+      datasets:[{ data:wrData.map(d=>d.value), backgroundColor:['#d95555','#ef7070'], borderWidth:0 }]
     },
     options: { responsive:true, cutout:'50%', plugins:{ tooltip:{ callbacks:{ label:ctx => ctx.label+': '+fmtM(ctx.raw) }}}}
   });
@@ -749,7 +780,7 @@ document.querySelectorAll('.tab').forEach(t => {
       datasets: [{
         label:'Estimated Platform Spend',
         data: [digitalAds.metaOnly, digitalAds.googleOnly, digitalAds.snap, digitalAds.x],
-        backgroundColor: ['#2471a3','#27ae60','#d4ac0d','#6c3483'],
+        backgroundColor: ['#4a90d9','#22c55e','#eab308','#8b5cf6'],
       }]
     },
     options: {
@@ -765,8 +796,8 @@ document.querySelectorAll('.tab').forEach(t => {
     data: {
       labels: ['Meta (Campaign)', 'Meta (JF Cmtes)', 'Google (Campaign)', 'Google (JF Cmtes)'],
       datasets: [
-        { label:'Harris / Dem', data:[hvt.harrisMeta, hvt.harrisJFMeta, hvt.harrisGoogle, hvt.harrisJFGoogle], backgroundColor:'rgba(36,113,163,0.85)' },
-        { label:'Trump / GOP', data:[hvt.trumpMeta, hvt.trumpJFMeta, hvt.trumpGoogle, hvt.trumpJFGoogle], backgroundColor:'rgba(203,67,53,0.85)' },
+        { label:'Harris / Dem', data:[hvt.harrisMeta, hvt.harrisJFMeta, hvt.harrisGoogle, hvt.harrisJFGoogle], backgroundColor:'rgba(74,144,217,0.85)' },
+        { label:'Trump / GOP', data:[hvt.trumpMeta, hvt.trumpJFMeta, hvt.trumpGoogle, hvt.trumpJFGoogle], backgroundColor:'rgba(217,85,85,0.85)' },
       ]
     },
     options: {
@@ -778,14 +809,14 @@ document.querySelectorAll('.tab').forEach(t => {
 
   // Media buying intermediaries
   const mediaBuyers = [
-    { name:'Waterfront Strategies (D)', total:858.4, color:'rgba(36,113,163,0.85)' },
-    { name:'Targeted Victory (R)', total:142.4, color:'rgba(203,67,53,0.85)' },
-    { name:'Bully Pulpit Interactive (D)', total:116.3, color:'rgba(93,173,226,0.85)' },
-    { name:'Google Inc (direct)', total:71.8, color:'rgba(39,174,96,0.85)' },
-    { name:'Majority Strategies (R)', total:33.0, color:'rgba(236,112,99,0.85)' },
-    { name:'Push Digital (R)', total:29.8, color:'rgba(211,84,0,0.85)' },
-    { name:'Meta / Facebook (direct)', total:24.4, color:'rgba(108,52,131,0.85)' },
-    { name:'Axiom Strategies (R)', total:13.7, color:'rgba(146,43,33,0.85)' },
+    { name:'Waterfront Strategies (D)', total:858.4, color:'rgba(74,144,217,0.85)' },
+    { name:'Targeted Victory (R)', total:142.4, color:'rgba(217,85,85,0.85)' },
+    { name:'Bully Pulpit Interactive (D)', total:116.3, color:'rgba(106,171,239,0.85)' },
+    { name:'Google Inc (direct)', total:71.8, color:'rgba(34,197,94,0.85)' },
+    { name:'Majority Strategies (R)', total:33.0, color:'rgba(239,112,112,0.85)' },
+    { name:'Push Digital (R)', total:29.8, color:'rgba(234,179,8,0.85)' },
+    { name:'Meta / Facebook (direct)', total:24.4, color:'rgba(139,92,246,0.85)' },
+    { name:'Axiom Strategies (R)', total:13.7, color:'rgba(138,45,45,0.85)' },
   ];
   new Chart(document.getElementById('chartMediaBuyers'), {
     type:'bar',
@@ -812,7 +843,7 @@ document.querySelectorAll('.tab').forEach(t => {
         <div class="coverage-bar-fill" style="width:${c.pct}%;background:${c.color}"></div>
       </div>
       <div class="coverage-pct" style="color:${c.color}">${c.pct}%</div>
-      <div style="font-size:11px;color:#64748b;min-width:120px;">${c.captured} / ${c.total}</div>
+      <div style="font-size:11px;color:var(--dim);min-width:120px;">${c.captured} / ${c.total}</div>
     </div>
   `).join('');
 })();
