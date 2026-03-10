@@ -1,0 +1,7 @@
+provider,category,total_amount,total_transactions,dem_amount,rep_amount,other_amount,dem_pct,rep_pct,dem_committees,rep_committees,bipartisan
+WINRED,Fundraising Platform (R-aligned),311222035.04,8580,0,311222035.04,0,0.0,100.0,0,5,No
+ACTBLUE,Fundraising Platform (D-aligned),296921554.2,15797,296921554.2,0,0,100.0,0.0,12,0,No
+NGP VAN,CRM / Voter File / Fundraising (D-aligned),78935102.64,2076,78935102.64,0,0,100.0,0.0,5,0,No
+ANEDOT,Fundraising Platform (R-leaning),28847639.74,7325,0,28482512.2,365127.54,0.0,98.7,0,59,No
+EVERYACTION,CRM / Fundraising Platform (D-aligned),28596420.73,914,28596420.73,0,0,100.0,0.0,10,0,No
+REVV,Fundraising Platform (R-aligned),6879534.86,778,0,6879534.86,0,0.0,100.0,0,4,No

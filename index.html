@@ -1,0 +1,716 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>2024 FEC Campaign Tech Spending Dashboard</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<style>
+  :root {
+    --bg: #0a0e17; --surface: #111827; --surface2: #1a2332;
+    --border: rgba(255,255,255,0.06); --text: #f0f4f8; --muted: #94a3b8;
+    --dem: #2471a3; --demLight: #5dade2; --demDark: #1B4F72;
+    --rep: #cb4335; --repLight: #ec7063; --repDark: #922B21;
+    --sapphire: #1a5276; --ruby: #922b21; --emerald: #1e8449;
+    --amethyst: #6c3483; --topaz: #b7950b; --teal: #117a65;
+    --rose: #884ea0; --garnet: #78281f;
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { background:var(--bg); color:var(--text); font-family:'Inter',system-ui,-apple-system,sans-serif; line-height:1.5; }
+  a { color:var(--demLight); text-decoration:none; }
+  a:hover { text-decoration:underline; }
+
+  .container { max-width:1260px; margin:0 auto; padding:20px 16px; }
+
+  /* Header */
+  .header { text-align:center; padding:32px 20px; margin-bottom:24px;
+    background:linear-gradient(135deg, rgba(26,82,118,0.3), rgba(146,43,33,0.2));
+    border-radius:16px; border:1px solid var(--border); }
+  .header h1 { font-size:28px; font-weight:800;
+    background:linear-gradient(135deg,#60a5fa,#f472b6);
+    -webkit-background-clip:text; -webkit-text-fill-color:transparent; margin-bottom:6px; }
+  .header p { color:var(--muted); font-size:14px; }
+  .header .subtitle { font-size:12px; color:#64748b; margin-top:8px; }
+
+  /* Tabs */
+  .tabs { display:flex; gap:6px; margin-bottom:20px; flex-wrap:wrap; justify-content:center; }
+  .tab { padding:8px 16px; border-radius:8px; cursor:pointer; font-size:13px; font-weight:600;
+    background:var(--surface); border:1px solid var(--border); color:var(--muted); transition:all .2s; }
+  .tab:hover { border-color:rgba(255,255,255,0.15); color:var(--text); }
+  .tab.active { background:linear-gradient(135deg,var(--sapphire),var(--amethyst));
+    color:#fff; border-color:transparent; }
+
+  /* Cards */
+  .card { background:var(--surface); border:1px solid var(--border); border-radius:12px;
+    padding:20px; margin-bottom:16px; }
+  .card h2 { font-size:17px; font-weight:700; margin-bottom:12px; }
+  .card h3 { font-size:14px; font-weight:600; margin-bottom:8px; color:var(--muted); }
+
+  /* Grid */
+  .grid2 { display:grid; grid-template-columns:1fr 1fr; gap:16px; }
+  .grid3 { display:grid; grid-template-columns:1fr 1fr 1fr; gap:16px; }
+  @media(max-width:768px) { .grid2,.grid3 { grid-template-columns:1fr; } }
+
+  /* KPI row */
+  .kpi-row { display:flex; gap:12px; margin-bottom:20px; flex-wrap:wrap; justify-content:center; }
+  .kpi { flex:1; min-width:150px; padding:16px; border-radius:12px;
+    background:var(--surface); border:1px solid var(--border); text-align:center; }
+  .kpi .value { font-size:24px; font-weight:800; }
+  .kpi .label { font-size:11px; color:var(--muted); text-transform:uppercase; letter-spacing:0.5px; margin-top:4px; }
+
+  /* Chart containers */
+  .chart-box { position:relative; width:100%; }
+  .chart-box canvas { width:100%!important; }
+
+  /* Tables */
+  table { width:100%; border-collapse:collapse; font-size:13px; }
+  th { text-align:left; padding:8px 10px; border-bottom:2px solid rgba(255,255,255,0.1);
+    color:var(--muted); font-size:11px; text-transform:uppercase; letter-spacing:0.5px; }
+  td { padding:8px 10px; border-bottom:1px solid rgba(255,255,255,0.04); }
+  tr:hover td { background:rgba(255,255,255,0.02); }
+
+  /* Badges */
+  .badge { display:inline-block; padding:2px 8px; border-radius:4px; font-size:11px; font-weight:600; }
+  .badge-dem { background:rgba(36,113,163,0.2); color:var(--demLight); }
+  .badge-rep { background:rgba(203,67,53,0.2); color:var(--repLight); }
+  .badge-both { background:rgba(108,52,131,0.2); color:#bb8fce; }
+
+  /* Source tags */
+  .source-tag { display:inline-block; padding:1px 6px; border-radius:3px; font-size:10px;
+    background:rgba(255,255,255,0.05); color:#64748b; margin-left:4px; }
+
+  /* Bar */
+  .split-bar { display:flex; height:20px; border-radius:4px; overflow:hidden; }
+  .split-bar .dem-part { background:var(--dem); }
+  .split-bar .rep-part { background:var(--rep); }
+
+  /* Section */
+  .section { display:none; }
+  .section.active { display:block; }
+
+  /* Coverage card */
+  .coverage-item { display:flex; align-items:center; gap:12px; margin-bottom:10px; }
+  .coverage-bar-bg { flex:1; height:10px; background:rgba(255,255,255,0.05); border-radius:5px; position:relative; }
+  .coverage-bar-fill { height:100%; border-radius:5px; transition:width .5s; }
+  .coverage-label { font-size:12px; min-width:160px; }
+  .coverage-pct { font-size:12px; font-weight:700; min-width:50px; text-align:right; }
+
+  /* Tooltip footnotes */
+  .footnote { font-size:11px; color:#64748b; margin-top:12px; line-height:1.6; }
+  .footnote strong { color:#94a3b8; }
+
+  /* Callout */
+  .callout { padding:14px 18px; border-radius:10px; margin-bottom:16px; font-size:13px; line-height:1.6; }
+  .callout-blue { background:rgba(36,113,163,0.1); border-left:3px solid var(--dem); }
+  .callout-red { background:rgba(203,67,53,0.1); border-left:3px solid var(--rep); }
+  .callout-purple { background:rgba(108,52,131,0.1); border-left:3px solid var(--amethyst); }
+  .callout-amber { background:rgba(183,149,11,0.1); border-left:3px solid var(--topaz); }
+</style>
+</head>
+<body>
+<div class="container">
+
+<!-- HEADER -->
+<div class="header">
+  <h1>2024 Campaign Tech &amp; Digital Spending</h1>
+  <p>FEC Disbursement Data &bull; Federal Election Commission &bull; 2023-2024 Cycle</p>
+  <div class="subtitle">Sources: FEC OpenFEC API, OpenSecrets vendor profiles, Brennan Center / Wesleyan Media Project</div>
+</div>
+
+<!-- TABS -->
+<div class="tabs" id="tabs">
+  <div class="tab active" data-tab="overview">Overview</div>
+  <div class="tab" data-tab="providers">All Providers</div>
+  <div class="tab" data-tab="headtohead">D vs R</div>
+  <div class="tab" data-tab="candidates">By Candidate</div>
+  <div class="tab" data-tab="digital">Digital Ads</div>
+  <div class="tab" data-tab="coverage">Data Coverage</div>
+</div>
+
+<!-- ============ OVERVIEW ============ -->
+<div class="section active" id="sec-overview">
+  <div class="kpi-row" id="kpi-row"></div>
+  <div class="grid2">
+    <div class="card">
+      <h2>Top Providers by Total Spending</h2>
+      <div class="chart-box"><canvas id="chartTopProviders" height="340"></canvas></div>
+    </div>
+    <div class="card">
+      <h2>Spending by Category</h2>
+      <div class="chart-box"><canvas id="chartCategories" height="340"></canvas></div>
+    </div>
+  </div>
+  <div class="card">
+    <h2>Party Split: Democrat vs Republican Tech Spending</h2>
+    <div class="grid2">
+      <div class="chart-box"><canvas id="chartPartySplit" height="260"></canvas></div>
+      <div id="partyInsights" style="padding:10px;"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ============ ALL PROVIDERS ============ -->
+<div class="section" id="sec-providers">
+  <div class="card">
+    <h2>All Campaign Tech &amp; Digital Vendors (2024 Cycle)</h2>
+    <div style="overflow-x:auto;">
+      <table id="providerTable"></table>
+    </div>
+  </div>
+</div>
+
+<!-- ============ HEAD TO HEAD ============ -->
+<div class="section" id="sec-headtohead">
+  <div class="card">
+    <h2>Head-to-Head: Democratic vs Republican Tech Ecosystem</h2>
+    <div class="chart-box"><canvas id="chartH2H" height="360"></canvas></div>
+  </div>
+  <div class="grid2" id="h2hInsightCards"></div>
+</div>
+
+<!-- ============ CANDIDATES ============ -->
+<div class="section" id="sec-candidates">
+  <div class="card">
+    <h2>Top Candidates / Entities by Tech Vendor Spending</h2>
+    <div class="chart-box"><canvas id="chartCandidates" height="400"></canvas></div>
+  </div>
+  <div class="grid2">
+    <div class="card">
+      <h2>ActBlue: Who Spent the Most?</h2>
+      <div class="chart-box"><canvas id="chartActblue" height="260"></canvas></div>
+    </div>
+    <div class="card">
+      <h2>WinRed: Who Spent the Most?</h2>
+      <div class="chart-box"><canvas id="chartWinred" height="260"></canvas></div>
+    </div>
+  </div>
+  <div class="card">
+    <h2>Structural Insight</h2>
+    <div class="grid2">
+      <div class="callout callout-blue">
+        <strong>Democrats: Centralized Infrastructure</strong><br>
+        The DNC and party committees act as a tech hub, accounting for the largest share of NGP VAN ($75.9M) and EveryAction ($22.6M) spending.
+        Individual campaigns like Harris and Biden channel fundraising through ActBlue but rely on party infra for CRM/data.
+      </div>
+      <div class="callout callout-red">
+        <strong>Republicans: Trump-Centric</strong><br>
+        Trump's committees account for 99.4% of all WinRed spending ($309M of $311M), 47% of Anedot, and 75% of Revv.
+        The GOP data ecosystem (Data Trust + i360) is more decentralized, with 5,000+ campaigns using it independently.
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============ DIGITAL ADS ============ -->
+<div class="section" id="sec-digital">
+  <div class="callout callout-amber" style="margin-bottom:16px;">
+    <strong>Why FEC numbers look low for ad platforms:</strong> Most campaigns don't pay Facebook/Google directly.
+    They route spending through media buying firms like Waterfront Strategies ($858M) and Targeted Victory ($142M).
+    The $1.35B spent on Meta + Google comes from platform-reported transparency data, not FEC payee records.
+  </div>
+  <div class="kpi-row">
+    <div class="kpi"><div class="value" style="color:var(--amethyst);">$1.9B</div><div class="label">Total Online Ads (4 platforms)</div></div>
+    <div class="kpi"><div class="value" style="color:var(--dem);">$1.35B</div><div class="label">Google + Meta Ads</div></div>
+    <div class="kpi"><div class="value" style="color:var(--demLight);">3:1</div><div class="label">D vs R Online Ratio</div></div>
+    <div class="kpi"><div class="value" style="color:var(--rep);">$858M</div><div class="label">Waterfront Strategies (D)</div></div>
+  </div>
+  <div class="grid2">
+    <div class="card">
+      <h2>Digital Ad Spending by Platform</h2>
+      <div class="chart-box"><canvas id="chartDigitalPlatforms" height="280"></canvas></div>
+    </div>
+    <div class="card">
+      <h2>Presidential Race: Harris vs Trump on Meta &amp; Google</h2>
+      <div class="chart-box"><canvas id="chartHarrisTrump" height="280"></canvas></div>
+    </div>
+  </div>
+  <div class="card">
+    <h2>The Media Buying Intermediary Layer</h2>
+    <p class="footnote" style="margin-bottom:12px;">Most digital ad money flows through intermediary media buying firms, not directly to platforms. These FEC-reported vendor payments represent the actual money trail:</p>
+    <div class="chart-box"><canvas id="chartMediaBuyers" height="300"></canvas></div>
+  </div>
+</div>
+
+<!-- ============ COVERAGE ============ -->
+<div class="section" id="sec-coverage">
+  <div class="card">
+    <h2>Data Coverage &amp; Methodology</h2>
+    <div class="callout callout-purple" style="margin-bottom:16px;">
+      This dashboard combines data from three sources: <strong>FEC OpenFEC API</strong> (direct schedule B disbursement queries for 6 fundraising/CRM platforms),
+      <strong>OpenSecrets vendor profiles</strong> (FEC-reported payments aggregated by vendor name), and <strong>Brennan Center / Wesleyan Media Project</strong>
+      (platform-reported political ad transparency data from Meta, Google, Snap, and X).
+    </div>
+    <div id="coverageBars"></div>
+  </div>
+
+  <div class="card">
+    <h2>What's Included vs What's Missing</h2>
+    <div class="grid2">
+      <div>
+        <h3 style="color:#27ae60;">Included (24 vendors, ~$2.5B tracked)</h3>
+        <table>
+          <tr><td>Fundraising Platforms</td><td style="text-align:right;font-weight:700;">$643.8M</td><td><span class="source-tag">FEC API</span></td></tr>
+          <tr><td>Digital Consulting / Media Buying</td><td style="text-align:right;font-weight:700;">$1,093.6M</td><td><span class="source-tag">OpenSecrets</span></td></tr>
+          <tr><td>CRM / Voter File</td><td style="text-align:right;font-weight:700;">$107.5M</td><td><span class="source-tag">FEC API</span></td></tr>
+          <tr><td>SMS / P2P Texting</td><td style="text-align:right;font-weight:700;">$53.7M</td><td><span class="source-tag">OpenSecrets</span></td></tr>
+          <tr><td>Digital Ad Platforms (direct to vendor)</td><td style="text-align:right;font-weight:700;">$96.2M</td><td><span class="source-tag">OpenSecrets</span></td></tr>
+          <tr><td>Data / Analytics</td><td style="text-align:right;font-weight:700;">$12.4M</td><td><span class="source-tag">OpenSecrets</span></td></tr>
+        </table>
+      </div>
+      <div>
+        <h3 style="color:var(--rep);">Not Included / Partially Captured</h3>
+        <table>
+          <tr><td>Platform-reported digital ads (Meta+Google)</td><td style="text-align:right;font-weight:700;">~$1.35B</td><td><span class="source-tag">Separate</span></td></tr>
+          <tr><td>TV/Radio ad spending</td><td style="text-align:right;font-weight:700;">~$5B+</td><td><span class="source-tag">Not included</span></td></tr>
+          <tr><td>Smaller consulting firms (&lt;$5M)</td><td style="text-align:right;font-weight:700;">~$500M est.</td><td><span class="source-tag">Not included</span></td></tr>
+          <tr><td>State/local campaign tech</td><td style="text-align:right;font-weight:700;">Unknown</td><td><span class="source-tag">Not included</span></td></tr>
+          <tr><td>Dark money digital spending</td><td style="text-align:right;font-weight:700;">~$281M</td><td><span class="source-tag">Not trackable</span></td></tr>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>Republican CRM / Voter Data: It Exists, Just Structured Differently</h2>
+    <div class="callout callout-red" style="margin-bottom:12px;">
+      Republicans DO use CRM and voter data platforms &mdash; they just don't appear the same way in FEC filings.
+      While Democrats centralize through NGP VAN (one vendor, $78.9M), Republicans distribute across multiple providers.
+    </div>
+    <table>
+      <thead><tr><th>R Platform</th><th>FEC Amount</th><th>Role</th><th>Usage (2024 survey)</th></tr></thead>
+      <tbody>
+        <tr><td>GOP Data Trust</td><td style="text-align:right;">$7.0M</td><td>RNC voter file, 5,000+ campaigns served</td><td>53% of R professionals</td></tr>
+        <tr><td>i360</td><td style="text-align:right;">$4.3M</td><td>Koch-backed data/analytics, 270M profiles</td><td>37% of R professionals</td></tr>
+        <tr><td>Campaign Sidekick</td><td style="text-align:right;">Est. $2-5M</td><td>#1 voter contact app, built by R operatives</td><td>44% of R professionals</td></tr>
+        <tr><td>Advantage</td><td style="text-align:right;">Est. $1-3M</td><td>Voter contact / canvassing app</td><td>27% of R professionals</td></tr>
+      </tbody>
+    </table>
+    <p class="footnote">
+      <strong>Key difference:</strong> GOP Data Trust/i360 charge lower per-seat fees and are subsidized by party infrastructure + Koch network,
+      resulting in lower FEC-visible spending despite comparable reach. 82% of Republican campaign professionals say data makes a tactical difference,
+      but only 38% say their data is accurate (Center for Campaign Innovation, 2024 post-election survey).
+    </p>
+  </div>
+
+  <div class="card">
+    <h2>Sources</h2>
+    <p class="footnote">
+      <strong>FEC OpenFEC API:</strong> Direct schedule_b/by_recipient queries for ActBlue, WinRed, NGP VAN, Anedot, EveryAction, Revv (batch of 600 records, DEMO_KEY).<br>
+      <strong>OpenSecrets:</strong> Vendor profiles for Targeted Victory, Bully Pulpit Interactive, Scale to Win, RumbleUp, Hustle, Catalist, i360, Axiom Strategies, Majority Strategies, Push Digital, Google Inc, Meta, Waterfront Strategies, GOP Data Trust (FEC data through June 2025).<br>
+      <strong>Brennan Center / OpenSecrets / Wesleyan Media Project:</strong> Platform-reported political ad transparency data from Meta, Google, Snap, X ($1.9B total).<br>
+      <strong>NPR, Search Engine Land, Bellingcat, Syracuse ElectionGraph:</strong> Harris vs Trump ad spending breakdowns.<br>
+      <strong>Center for Campaign Innovation:</strong> 2024 post-election Republican technology survey data.
+    </p>
+  </div>
+</div>
+
+</div><!-- /container -->
+
+<script>
+// ============================================================
+// DATA
+// ============================================================
+const providers = [
+  // Fundraising Platforms (FEC API)
+  { name:"WinRed", cat:"Fundraising Platform", total:311.2, dem:0, rep:311.2, party:"R", src:"FEC API" },
+  { name:"ActBlue", cat:"Fundraising Platform", total:296.9, dem:296.9, rep:0, party:"D", src:"FEC API" },
+  { name:"Anedot", cat:"Fundraising Platform", total:28.8, dem:0.4, rep:28.4, party:"R", src:"FEC API" },
+  { name:"Revv", cat:"Fundraising Platform", total:6.9, dem:0, rep:6.9, party:"R", src:"FEC API" },
+
+  // CRM / Voter File (FEC API)
+  { name:"NGP VAN", cat:"CRM / Voter File", total:78.9, dem:78.9, rep:0, party:"D", src:"FEC API" },
+  { name:"EveryAction", cat:"CRM / Fundraising", total:28.6, dem:28.6, rep:0, party:"D", src:"FEC API" },
+
+  // Digital Consulting / Media Buying (OpenSecrets)
+  { name:"Waterfront Strategies", cat:"Digital Consulting / Media Buying", total:858.4, dem:858.4, rep:0, party:"D", src:"OpenSecrets" },
+  { name:"Targeted Victory", cat:"Digital Consulting / Media Buying", total:142.4, dem:0, rep:142.4, party:"R", src:"OpenSecrets" },
+  { name:"Bully Pulpit Interactive", cat:"Digital Consulting / Media Buying", total:116.3, dem:116.3, rep:0, party:"D", src:"OpenSecrets" },
+  { name:"Majority Strategies", cat:"Digital Consulting / Media Buying", total:33.0, dem:0, rep:33.0, party:"R", src:"OpenSecrets" },
+  { name:"Push Digital", cat:"Digital Consulting / Media Buying", total:29.8, dem:0, rep:29.8, party:"R", src:"OpenSecrets" },
+  { name:"Axiom Strategies", cat:"Digital Consulting / Media Buying", total:13.7, dem:0, rep:13.7, party:"R", src:"OpenSecrets" },
+
+  // SMS / P2P Texting (OpenSecrets)
+  { name:"Scale to Win", cat:"SMS / P2P Texting", total:51.4, dem:51.4, rep:0, party:"D", src:"OpenSecrets" },
+  { name:"RumbleUp", cat:"SMS / P2P Texting", total:2.3, dem:0, rep:2.3, party:"R", src:"OpenSecrets" },
+  { name:"Hustle", cat:"SMS / P2P Texting", total:1.5, dem:1.5, rep:0, party:"D", src:"OpenSecrets" },
+
+  // Digital Ad Platforms (OpenSecrets vendor payments)
+  { name:"Google Inc", cat:"Digital Ad Platform", total:71.8, dem:50.3, rep:21.5, party:"Both", src:"OpenSecrets" },
+  { name:"Meta / Facebook", cat:"Digital Ad Platform", total:24.4, dem:17.1, rep:7.3, party:"Both", src:"OpenSecrets" },
+
+  // Data / Analytics (OpenSecrets)
+  { name:"GOP Data Trust", cat:"Data / Analytics", total:7.0, dem:0, rep:7.0, party:"R", src:"OpenSecrets" },
+  { name:"i360", cat:"Data / Analytics", total:4.3, dem:0, rep:4.3, party:"R", src:"OpenSecrets" },
+  { name:"Catalist", cat:"Data / Analytics", total:1.1, dem:1.1, rep:0, party:"D", src:"OpenSecrets" },
+];
+
+const sorted = [...providers].sort((a,b) => b.total - a.total);
+
+// Candidate data (from our FEC API extraction)
+const candidates = [
+  { name:"Trump, Donald J", party:"R", actblue:0, winred:309.4, anedot:13.6, everyaction:0, ngpvan:0, revv:5.2, total:328.2 },
+  { name:"DNC / Dem Party Infra", party:"D", actblue:138.8, winred:0, anedot:0, everyaction:22.6, ngpvan:75.9, revv:0, total:237.3 },
+  { name:"Harris, Kamala", party:"D", actblue:76.3, winred:0, anedot:0, everyaction:1.7, ngpvan:2.6, revv:0, total:80.6 },
+  { name:"Biden, Joseph R Jr", party:"D", actblue:47.4, winred:0, anedot:0, everyaction:3.7, ngpvan:0.4, revv:0, total:51.5 },
+  { name:"DSCC (Senate Dems)", party:"D", actblue:18.5, winred:0, anedot:0, everyaction:0.6, ngpvan:0, revv:0, total:19.1 },
+  { name:"DCCC (House Dems)", party:"D", actblue:15.9, winred:0, anedot:0, everyaction:0, ngpvan:0, revv:0, total:15.9 },
+  { name:"NRSC (Senate GOP)", party:"R", actblue:0, winred:1.8, anedot:0, everyaction:0, ngpvan:0, revv:1.7, total:3.5 },
+  { name:"Cruz, Ted", party:"R", actblue:0, winred:0, anedot:1.1, everyaction:0, ngpvan:0, revv:0, total:1.1 },
+];
+
+// Digital ad platform data
+const digitalAds = {
+  totalOnline: 1900, // $1.9B across 4 platforms
+  googleMeta: 1350,  // $1.35B on Google + Meta
+  metaOnly: 568.7,   // eMarketer estimate
+  googleOnly: 553.2, // eMarketer estimate
+  snap: 150,         // estimate from $1.9B - $1.35B - X share
+  x: 100,            // estimate
+};
+
+// Harris vs Trump platform spending
+const hvt = {
+  harrisMeta: 113, trumpMeta: 17,
+  harrisGoogle: 31.5, trumpGoogle: 9.3,
+  // Joint fundraising adds
+  harrisJFMeta: 27, trumpJFMeta: 31,
+  harrisJFGoogle: 15, trumpJFGoogle: 10,
+};
+
+// Coverage data
+const coverage = [
+  { cat:"Fundraising Platforms", captured:"$643.8M", total:"$650M est.", pct:99, color:"var(--emerald)" },
+  { cat:"CRM / Voter Data (D)", captured:"$107.5M", total:"$110M est.", pct:98, color:"var(--dem)" },
+  { cat:"CRM / Voter Data (R)", captured:"$11.3M", total:"$20M est.", pct:57, color:"var(--rep)" },
+  { cat:"Digital Consulting / Media Buying", captured:"$1,093.6M", total:"$1,500M est.", pct:73, color:"var(--amethyst)" },
+  { cat:"SMS / P2P Texting", captured:"$55.2M", total:"$80M est.", pct:69, color:"var(--topaz)" },
+  { cat:"Digital Ad Platforms (FEC direct)", captured:"$96.2M", total:"$1,350M platform-reported", pct:7, color:"var(--rose)" },
+  { cat:"Data / Analytics", captured:"$12.4M", total:"$40M est.", pct:31, color:"var(--teal)" },
+];
+
+// Head-to-head matchups
+const matchups = [
+  { cat:"Online Fundraising", dem:"ActBlue", dVal:296.9, rep:"WinRed", rVal:311.2 },
+  { cat:"Media Buying / Consulting", dem:"Waterfront + BPI", dVal:974.7, rep:"Targeted V + Majority + Push + Axiom", rVal:218.9 },
+  { cat:"CRM / Voter Data", dem:"NGP VAN + EveryAction", dVal:107.5, rep:"Data Trust + i360", rVal:11.3 },
+  { cat:"SMS / Texting", dem:"Scale to Win + Hustle", dVal:52.9, rep:"RumbleUp", rVal:2.3 },
+  { cat:"Data / Analytics", dem:"Catalist", dVal:1.1, rep:"i360 (counted above)", rVal:0 },
+  { cat:"Digital Ads (FEC direct)", dem:"Google+Meta (D share)", dVal:67.4, rep:"Google+Meta (R share)", rVal:28.8 },
+];
+
+// ============================================================
+// CHART DEFAULTS
+// ============================================================
+Chart.defaults.color = '#94a3b8';
+Chart.defaults.borderColor = 'rgba(255,255,255,0.06)';
+Chart.defaults.font.family = "'Inter',system-ui,sans-serif";
+Chart.defaults.font.size = 12;
+Chart.defaults.plugins.legend.labels.usePointStyle = true;
+Chart.defaults.plugins.legend.labels.pointStyle = 'circle';
+
+const fmtM = v => '$' + v.toFixed(1) + 'M';
+const fmtB = v => '$' + (v/1000).toFixed(2) + 'B';
+
+// ============================================================
+// TAB SWITCHING
+// ============================================================
+document.querySelectorAll('.tab').forEach(t => {
+  t.addEventListener('click', () => {
+    document.querySelectorAll('.tab').forEach(x => x.classList.remove('active'));
+    document.querySelectorAll('.section').forEach(x => x.classList.remove('active'));
+    t.classList.add('active');
+    document.getElementById('sec-' + t.dataset.tab).classList.add('active');
+  });
+});
+
+// ============================================================
+// OVERVIEW TAB
+// ============================================================
+(() => {
+  const totalAll = providers.reduce((s,p) => s + p.total, 0);
+  const totalDem = providers.reduce((s,p) => s + p.dem, 0);
+  const totalRep = providers.reduce((s,p) => s + p.rep, 0);
+
+  // KPIs
+  document.getElementById('kpi-row').innerHTML = [
+    { val: fmtB(totalAll*1000000), label:'Total Tracked Spending', color:'var(--amethyst)' },
+    { val: fmtB(totalDem*1000000), label:'Democratic Spending', color:'var(--dem)' },
+    { val: fmtB(totalRep*1000000), label:'Republican Spending', color:'var(--rep)' },
+    { val: providers.length, label:'Vendors Tracked', color:'var(--topaz)' },
+    { val: '6', label:'Categories', color:'var(--teal)' },
+  ].map(k => `<div class="kpi"><div class="value" style="color:${k.color}">${k.val}</div><div class="label">${k.label}</div></div>`).join('');
+
+  // Top providers bar chart
+  const top12 = sorted.slice(0,12);
+  new Chart(document.getElementById('chartTopProviders'), {
+    type:'bar',
+    data: {
+      labels: top12.map(p => p.name),
+      datasets: [
+        { label:'Democrat', data:top12.map(p => p.dem), backgroundColor:'rgba(36,113,163,0.8)' },
+        { label:'Republican', data:top12.map(p => p.rep), backgroundColor:'rgba(203,67,53,0.8)' },
+      ]
+    },
+    options: {
+      indexAxis:'y', responsive:true, plugins:{ tooltip:{ callbacks:{ label:ctx => ctx.dataset.label+': '+fmtM(ctx.raw) }}},
+      scales:{ x:{ ticks:{ callback:v=>fmtM(v) }, stacked:true }, y:{ stacked:true, ticks:{ font:{ size:11 }}} }
+    }
+  });
+
+  // Category chart
+  const cats = {};
+  providers.forEach(p => {
+    if (!cats[p.cat]) cats[p.cat] = { dem:0, rep:0 };
+    cats[p.cat].dem += p.dem;
+    cats[p.cat].rep += p.rep;
+  });
+  const catArr = Object.entries(cats).map(([k,v]) => ({ name:k, dem:v.dem, rep:v.rep, total:v.dem+v.rep })).sort((a,b) => b.total - a.total);
+  new Chart(document.getElementById('chartCategories'), {
+    type:'bar',
+    data: {
+      labels: catArr.map(c => c.name),
+      datasets: [
+        { label:'Democrat', data:catArr.map(c => c.dem), backgroundColor:'rgba(36,113,163,0.8)' },
+        { label:'Republican', data:catArr.map(c => c.rep), backgroundColor:'rgba(203,67,53,0.8)' },
+      ]
+    },
+    options: {
+      indexAxis:'y', responsive:true,
+      plugins:{ tooltip:{ callbacks:{ label:ctx => ctx.dataset.label+': '+fmtM(ctx.raw) }}},
+      scales:{ x:{ ticks:{ callback:v=>fmtM(v) }, stacked:true }, y:{ stacked:true, ticks:{ font:{ size:11 }}} }
+    }
+  });
+
+  // Party split doughnut
+  new Chart(document.getElementById('chartPartySplit'), {
+    type:'doughnut',
+    data: {
+      labels:['Democrat','Republican'],
+      datasets:[{ data:[totalDem, totalRep], backgroundColor:['rgba(36,113,163,0.85)','rgba(203,67,53,0.85)'], borderWidth:0 }]
+    },
+    options: {
+      responsive:true, cutout:'55%',
+      plugins:{ tooltip:{ callbacks:{ label:ctx => ctx.label+': '+fmtM(ctx.raw)+' ('+((ctx.raw/totalAll)*100).toFixed(1)+'%)' }}}
+    }
+  });
+
+  // Party insights
+  document.getElementById('partyInsights').innerHTML = `
+    <div style="margin-bottom:16px;">
+      <div style="font-size:13px;color:var(--muted);margin-bottom:6px;">Democrat Total</div>
+      <div style="font-size:28px;font-weight:800;color:var(--dem);">${fmtB(totalDem*1000000)}</div>
+      <div style="font-size:12px;color:var(--muted);">${((totalDem/totalAll)*100).toFixed(1)}% of tracked spending</div>
+    </div>
+    <div style="margin-bottom:16px;">
+      <div style="font-size:13px;color:var(--muted);margin-bottom:6px;">Republican Total</div>
+      <div style="font-size:28px;font-weight:800;color:var(--rep);">${fmtB(totalRep*1000000)}</div>
+      <div style="font-size:12px;color:var(--muted);">${((totalRep/totalAll)*100).toFixed(1)}% of tracked spending</div>
+    </div>
+    <div style="font-size:12px;color:var(--muted);line-height:1.6;">
+      Democrats dominate tracked tech spending primarily due to <strong>Waterfront Strategies</strong> ($858M media buying).
+      When excluding media buying intermediaries, the fundraising platform split is nearly even (ActBlue $297M vs WinRed $311M).
+    </div>
+  `;
+})();
+
+// ============================================================
+// PROVIDERS TABLE
+// ============================================================
+(() => {
+  let html = '<thead><tr><th>#</th><th>Provider</th><th>Category</th><th style="text-align:right">Total</th><th style="text-align:right">Dem</th><th style="text-align:right">Rep</th><th style="width:120px">Split</th><th>Lean</th><th>Source</th></tr></thead><tbody>';
+  sorted.forEach((p,i) => {
+    const demPct = p.total > 0 ? (p.dem/p.total)*100 : 0;
+    const repPct = p.total > 0 ? (p.rep/p.total)*100 : 0;
+    const badgeClass = p.party === 'D' ? 'badge-dem' : p.party === 'R' ? 'badge-rep' : 'badge-both';
+    html += `<tr>
+      <td style="color:var(--muted)">${i+1}</td>
+      <td style="font-weight:600">${p.name}</td>
+      <td style="font-size:12px;color:var(--muted)">${p.cat}</td>
+      <td style="text-align:right;font-weight:700">${fmtM(p.total)}</td>
+      <td style="text-align:right;color:var(--dem)">${fmtM(p.dem)}</td>
+      <td style="text-align:right;color:var(--rep)">${fmtM(p.rep)}</td>
+      <td><div class="split-bar"><div class="dem-part" style="width:${demPct}%"></div><div class="rep-part" style="width:${repPct}%"></div></div></td>
+      <td><span class="badge ${badgeClass}">${p.party}</span></td>
+      <td><span class="source-tag">${p.src}</span></td>
+    </tr>`;
+  });
+  html += '</tbody>';
+  document.getElementById('providerTable').innerHTML = html;
+})();
+
+// ============================================================
+// HEAD TO HEAD
+// ============================================================
+(() => {
+  new Chart(document.getElementById('chartH2H'), {
+    type:'bar',
+    data: {
+      labels: matchups.map(m => m.cat),
+      datasets: [
+        { label:'Democrat', data: matchups.map(m => m.dVal), backgroundColor:'rgba(36,113,163,0.85)' },
+        { label:'Republican', data: matchups.map(m => -m.rVal), backgroundColor:'rgba(203,67,53,0.85)' },
+      ]
+    },
+    options: {
+      indexAxis:'y', responsive:true,
+      plugins:{ tooltip:{ callbacks:{ label:ctx => ctx.dataset.label+': '+fmtM(Math.abs(ctx.raw)) }}},
+      scales:{
+        x:{ ticks:{ callback:v => fmtM(Math.abs(v)) }},
+        y:{ ticks:{ font:{ size:11 }}}
+      }
+    }
+  });
+
+  const insights = [
+    { title:'Democrats dominate media buying', body:`Waterfront Strategies alone ($858M) dwarfs all Republican consulting firms combined ($219M). This reflects Democrats' centralized ad-buying approach through GMMB/Waterfront.`, cls:'callout-blue' },
+    { title:'Fundraising platforms nearly even', body:`WinRed ($311M) slightly edges ActBlue ($297M), but when you add Anedot ($29M) and Revv ($7M), the GOP has a $54M advantage in online fundraising infrastructure.`, cls:'callout-red' },
+    { title:'Democrats lead in SMS 23:1', body:`Scale to Win ($51.4M) + Hustle ($1.5M) vs RumbleUp ($2.3M). Democratic campaigns invested heavily in peer-to-peer texting as a voter contact channel.`, cls:'callout-blue' },
+    { title:'Republican data is undercounted', body:`GOP Data Trust ($7M) + i360 ($4.3M) appear small vs NGP VAN ($79M), but R data infra is subsidized by Koch network and RNC, reducing FEC-visible costs.`, cls:'callout-red' },
+  ];
+  document.getElementById('h2hInsightCards').innerHTML = insights.map(i => `<div class="callout ${i.cls}"><strong>${i.title}</strong><br>${i.body}</div>`).join('');
+})();
+
+// ============================================================
+// CANDIDATES
+// ============================================================
+(() => {
+  const vendorColors = {
+    actblue:'rgba(36,113,163,0.85)', winred:'rgba(203,67,53,0.85)',
+    anedot:'rgba(236,112,99,0.85)', everyaction:'rgba(39,174,96,0.85)',
+    ngpvan:'rgba(142,68,173,0.85)', revv:'rgba(211,84,0,0.85)',
+  };
+
+  new Chart(document.getElementById('chartCandidates'), {
+    type:'bar',
+    data: {
+      labels: candidates.map(c => c.name),
+      datasets: [
+        { label:'ActBlue', data:candidates.map(c=>c.actblue), backgroundColor:vendorColors.actblue },
+        { label:'WinRed', data:candidates.map(c=>c.winred), backgroundColor:vendorColors.winred },
+        { label:'Anedot', data:candidates.map(c=>c.anedot), backgroundColor:vendorColors.anedot },
+        { label:'EveryAction', data:candidates.map(c=>c.everyaction), backgroundColor:vendorColors.everyaction },
+        { label:'NGP VAN', data:candidates.map(c=>c.ngpvan), backgroundColor:vendorColors.ngpvan },
+        { label:'Revv', data:candidates.map(c=>c.revv), backgroundColor:vendorColors.revv },
+      ]
+    },
+    options: {
+      indexAxis:'y', responsive:true,
+      plugins:{ tooltip:{ callbacks:{ label:ctx => ctx.dataset.label+': '+fmtM(ctx.raw) }}},
+      scales:{ x:{ stacked:true, ticks:{ callback:v=>fmtM(v) }}, y:{ stacked:true, ticks:{ font:{ size:11 }}}}
+    }
+  });
+
+  // ActBlue breakdown
+  const abData = [
+    { name:'DNC / Party Infra', value:138.8 },
+    { name:'Harris, Kamala', value:76.3 },
+    { name:'Biden, Joseph', value:47.4 },
+    { name:'DSCC', value:18.5 },
+    { name:'DCCC', value:15.9 },
+  ];
+  new Chart(document.getElementById('chartActblue'), {
+    type:'doughnut',
+    data: {
+      labels: abData.map(d=>d.name),
+      datasets:[{ data:abData.map(d=>d.value), backgroundColor:['#1B4F72','#2471a3','#5dade2','#2980b9','#1abc9c'], borderWidth:0 }]
+    },
+    options: { responsive:true, cutout:'50%', plugins:{ tooltip:{ callbacks:{ label:ctx => ctx.label+': '+fmtM(ctx.raw) }}}}
+  });
+
+  // WinRed breakdown
+  const wrData = [
+    { name:'Trump, Donald', value:309.4 },
+    { name:'NRSC', value:1.8 },
+  ];
+  new Chart(document.getElementById('chartWinred'), {
+    type:'doughnut',
+    data: {
+      labels: wrData.map(d=>d.name),
+      datasets:[{ data:wrData.map(d=>d.value), backgroundColor:['#cb4335','#ec7063'], borderWidth:0 }]
+    },
+    options: { responsive:true, cutout:'50%', plugins:{ tooltip:{ callbacks:{ label:ctx => ctx.label+': '+fmtM(ctx.raw) }}}}
+  });
+})();
+
+// ============================================================
+// DIGITAL ADS TAB
+// ============================================================
+(() => {
+  // Platform breakdown
+  new Chart(document.getElementById('chartDigitalPlatforms'), {
+    type:'bar',
+    data: {
+      labels: ['Meta (Facebook/IG)', 'Google (Search/YouTube)', 'Snapchat', 'X (Twitter)'],
+      datasets: [{
+        label:'Estimated Platform Spend',
+        data: [digitalAds.metaOnly, digitalAds.googleOnly, digitalAds.snap, digitalAds.x],
+        backgroundColor: ['#2471a3','#27ae60','#d4ac0d','#6c3483'],
+      }]
+    },
+    options: {
+      responsive:true,
+      plugins:{ tooltip:{ callbacks:{ label:ctx => fmtM(ctx.raw) }}},
+      scales:{ y:{ ticks:{ callback:v=>fmtM(v) }}}
+    }
+  });
+
+  // Harris vs Trump
+  new Chart(document.getElementById('chartHarrisTrump'), {
+    type:'bar',
+    data: {
+      labels: ['Meta (Campaign)', 'Meta (JF Cmtes)', 'Google (Campaign)', 'Google (JF Cmtes)'],
+      datasets: [
+        { label:'Harris / Dem', data:[hvt.harrisMeta, hvt.harrisJFMeta, hvt.harrisGoogle, hvt.harrisJFGoogle], backgroundColor:'rgba(36,113,163,0.85)' },
+        { label:'Trump / GOP', data:[hvt.trumpMeta, hvt.trumpJFMeta, hvt.trumpGoogle, hvt.trumpJFGoogle], backgroundColor:'rgba(203,67,53,0.85)' },
+      ]
+    },
+    options: {
+      responsive:true,
+      plugins:{ tooltip:{ callbacks:{ label:ctx => ctx.dataset.label+': '+fmtM(ctx.raw) }}},
+      scales:{ y:{ ticks:{ callback:v=>fmtM(v) }}}
+    }
+  });
+
+  // Media buying intermediaries
+  const mediaBuyers = [
+    { name:'Waterfront Strategies (D)', total:858.4, color:'rgba(36,113,163,0.85)' },
+    { name:'Targeted Victory (R)', total:142.4, color:'rgba(203,67,53,0.85)' },
+    { name:'Bully Pulpit Interactive (D)', total:116.3, color:'rgba(93,173,226,0.85)' },
+    { name:'Google Inc (direct)', total:71.8, color:'rgba(39,174,96,0.85)' },
+    { name:'Majority Strategies (R)', total:33.0, color:'rgba(236,112,99,0.85)' },
+    { name:'Push Digital (R)', total:29.8, color:'rgba(211,84,0,0.85)' },
+    { name:'Meta / Facebook (direct)', total:24.4, color:'rgba(108,52,131,0.85)' },
+    { name:'Axiom Strategies (R)', total:13.7, color:'rgba(146,43,33,0.85)' },
+  ];
+  new Chart(document.getElementById('chartMediaBuyers'), {
+    type:'bar',
+    data: {
+      labels: mediaBuyers.map(m=>m.name),
+      datasets:[{ data:mediaBuyers.map(m=>m.total), backgroundColor:mediaBuyers.map(m=>m.color) }]
+    },
+    options: {
+      indexAxis:'y', responsive:true,
+      plugins:{ legend:{ display:false }, tooltip:{ callbacks:{ label:ctx => fmtM(ctx.raw) }}},
+      scales:{ x:{ ticks:{ callback:v=>fmtM(v) }}, y:{ ticks:{ font:{ size:11 }}}}
+    }
+  });
+})();
+
+// ============================================================
+// COVERAGE TAB
+// ============================================================
+(() => {
+  document.getElementById('coverageBars').innerHTML = coverage.map(c => `
+    <div class="coverage-item">
+      <div class="coverage-label">${c.cat}</div>
+      <div class="coverage-bar-bg">
+        <div class="coverage-bar-fill" style="width:${c.pct}%;background:${c.color}"></div>
+      </div>
+      <div class="coverage-pct" style="color:${c.color}">${c.pct}%</div>
+      <div style="font-size:11px;color:#64748b;min-width:120px;">${c.captured} / ${c.total}</div>
+    </div>
+  `).join('');
+})();
+</script>
+</body>
+</html>
