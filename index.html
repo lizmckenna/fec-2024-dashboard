@@ -141,24 +141,70 @@
   .meth-item .meth-pct { font-size:22px; font-weight:700; margin-bottom:2px; letter-spacing:-0.02em; }
   .meth-item .meth-label { font-weight:600; font-size:10px; text-transform:uppercase; letter-spacing:0.5px; margin-bottom:6px; color:var(--dim); }
 
-  /* ===== RESPONSIVE ===== */
+  /* Helper: hide on mobile */
+  .hide-mobile { }
+
+  /* ===== TABLET (768px) ===== */
   @media(max-width:768px) {
     .grid2, .grid3 { grid-template-columns:1fr; }
     .meth-grid { grid-template-columns:1fr; }
-    .coverage-item { flex-wrap:wrap; gap:6px; }
-    .coverage-label { min-width:100%; font-size:11px; }
-    .coverage-pct { min-width:auto; }
+
+    /* Tables: hide less important columns */
+    .hide-mobile { display:none !important; }
     table { font-size:12px; }
     th, td { padding:6px 8px; }
+    .split-bar { width:80px; }
+
+    /* Coverage: vertical stack */
+    .coverage-item { flex-wrap:wrap; gap:4px; }
+    .coverage-label { min-width:100%; font-size:11px; margin-bottom:2px; }
+    .coverage-pct { min-width:auto; }
+    .coverage-bar-bg { min-width:0; }
+
+    /* Charts: increase height for readability */
+    .chart-box canvas { min-height:280px; }
   }
+
+  /* ===== PHONE (480px) ===== */
   @media(max-width:480px) {
-    .kpi { min-width:calc(50% - 8px); }
+    .container { padding:12px 10px; }
+
+    /* KPI: 2-col grid */
+    .kpi-row { display:grid; grid-template-columns:1fr 1fr; gap:8px; }
+    .kpi { min-width:0; padding:12px 8px; }
     .kpi .value { font-size:18px; }
-    .kpi .label { font-size:9px; }
-    .tab { padding:8px 12px; font-size:12px; }
-    .callout, .insight-card, .annotation-note { padding:12px 14px; font-size:12px; }
+    .kpi .label { font-size:9px; letter-spacing:0.3px; }
+
+    /* Tabs: smaller touch targets but still >=44px tall */
+    .tab { padding:10px 12px; font-size:12px; min-height:44px; display:flex; align-items:center; }
+
+    /* Cards: tighter */
+    .card { padding:14px 12px; margin-bottom:12px; }
+    .card h2 { font-size:14px; margin-bottom:10px; }
+
+    /* Callouts: compact */
+    .callout, .insight-card, .annotation-note { padding:12px 14px; font-size:12px; line-height:1.55; }
     .insight-banner { padding:14px 16px; font-size:12px; }
-    .split-bar { height:12px; }
+    .insight-card h4 { font-size:13px; }
+
+    /* Header */
+    .header { padding:20px 16px; border-radius:12px; }
+
+    /* Split bar */
+    .split-bar { height:12px; width:60px; }
+
+    /* Footnotes */
+    .footnote { font-size:10px; }
+
+    /* Chart labels: prevent overlap */
+    .chart-box canvas { min-height:250px; }
+  }
+
+  /* ===== SMALL PHONE (360px) ===== */
+  @media(max-width:360px) {
+    .kpi-row { grid-template-columns:1fr; }
+    .kpi .value { font-size:20px; }
+    .tab { padding:10px 10px; font-size:11px; }
   }
 </style>
 </head>
@@ -512,12 +558,18 @@ const matchups = [
 // ============================================================
 // CHART DEFAULTS
 // ============================================================
+const isMobile = window.innerWidth <= 768;
+const isSmall = window.innerWidth <= 480;
 Chart.defaults.color = '#a1a1aa';
 Chart.defaults.borderColor = 'rgba(255,255,255,0.06)';
 Chart.defaults.font.family = "'Inter',-apple-system,BlinkMacSystemFont,sans-serif";
-Chart.defaults.font.size = 12;
+Chart.defaults.font.size = isSmall ? 10 : 12;
 Chart.defaults.plugins.legend.labels.usePointStyle = true;
 Chart.defaults.plugins.legend.labels.pointStyle = 'circle';
+Chart.defaults.plugins.legend.labels.padding = isSmall ? 12 : 16;
+Chart.defaults.plugins.legend.labels.boxWidth = isSmall ? 8 : 10;
+Chart.defaults.maintainAspectRatio = true;
+Chart.defaults.responsive = true;
 
 const fmtM = v => '$' + v.toFixed(1) + 'M';
 const fmtB = v => '$' + (v/1000).toFixed(2) + 'B';
@@ -556,19 +608,21 @@ document.querySelectorAll('.tab').forEach(t => {
   ].map(k => `<div class="kpi"><div class="value" style="color:${k.color}">${k.val}</div><div class="label">${k.label}</div></div>`).join('');
 
   // Top providers bar chart
-  const top12 = sorted.slice(0,12);
+  const top12 = sorted.slice(0, isMobile ? 10 : 12);
   new Chart(document.getElementById('chartTopProviders'), {
     type:'bar',
     data: {
-      labels: top12.map(p => p.name),
+      labels: top12.map(p => isSmall && p.name.length > 16 ? p.name.slice(0,14)+'...' : p.name),
       datasets: [
         { label:'Democrat', data:top12.map(p => p.dem), backgroundColor:'rgba(74,144,217,0.8)' },
         { label:'Republican', data:top12.map(p => p.rep), backgroundColor:'rgba(217,85,85,0.8)' },
       ]
     },
     options: {
-      indexAxis:'y', responsive:true, plugins:{ tooltip:{ callbacks:{ label:ctx => ctx.dataset.label+': '+fmtM(ctx.raw) }}},
-      scales:{ x:{ ticks:{ callback:v=>fmtM(v) }, stacked:true }, y:{ stacked:true, ticks:{ font:{ size:11 }}} }
+      indexAxis:'y', responsive:true, plugins:{ tooltip:{ callbacks:{ label:ctx => ctx.dataset.label+': '+fmtM(ctx.raw) }},
+        legend:{ labels:{ font:{ size: isSmall ? 10 : 12 }}}},
+      scales:{ x:{ ticks:{ callback:v=>fmtM(v), font:{ size: isSmall ? 9 : 11 }}, stacked:true },
+        y:{ stacked:true, ticks:{ font:{ size: isSmall ? 9 : 11 }}} }
     }
   });
 
@@ -580,10 +634,11 @@ document.querySelectorAll('.tab').forEach(t => {
     cats[p.cat].rep += p.rep;
   });
   const catArr = Object.entries(cats).map(([k,v]) => ({ name:k, dem:v.dem, rep:v.rep, total:v.dem+v.rep })).sort((a,b) => b.total - a.total);
+  const truncLabel = (s, max) => isSmall && s.length > max ? s.slice(0,max-2)+'..' : s;
   new Chart(document.getElementById('chartCategories'), {
     type:'bar',
     data: {
-      labels: catArr.map(c => c.name),
+      labels: catArr.map(c => truncLabel(c.name, 20)),
       datasets: [
         { label:'Democrat', data:catArr.map(c => c.dem), backgroundColor:'rgba(74,144,217,0.8)' },
         { label:'Republican', data:catArr.map(c => c.rep), backgroundColor:'rgba(217,85,85,0.8)' },
@@ -592,7 +647,8 @@ document.querySelectorAll('.tab').forEach(t => {
     options: {
       indexAxis:'y', responsive:true,
       plugins:{ tooltip:{ callbacks:{ label:ctx => ctx.dataset.label+': '+fmtM(ctx.raw) }}},
-      scales:{ x:{ ticks:{ callback:v=>fmtM(v) }, stacked:true }, y:{ stacked:true, ticks:{ font:{ size:11 }}} }
+      scales:{ x:{ ticks:{ callback:v=>fmtM(v), font:{ size: isSmall ? 9 : 11 }}, stacked:true },
+        y:{ stacked:true, ticks:{ font:{ size: isSmall ? 9 : 11 }}} }
     }
   });
 
@@ -635,7 +691,7 @@ document.querySelectorAll('.tab').forEach(t => {
 // PROVIDERS TABLE
 // ============================================================
 (() => {
-  let html = '<thead><tr><th>#</th><th>Provider</th><th>Category</th><th style="text-align:right">Total</th><th style="text-align:right">Dem</th><th style="text-align:right">Rep</th><th style="width:120px">Split</th><th>Lean</th><th>Source</th></tr></thead><tbody>';
+  let html = '<thead><tr><th>#</th><th>Provider</th><th class="hide-mobile">Category</th><th style="text-align:right">Total</th><th class="hide-mobile" style="text-align:right">Dem</th><th class="hide-mobile" style="text-align:right">Rep</th><th style="width:120px">Split</th><th>Lean</th><th class="hide-mobile">Source</th></tr></thead><tbody>';
   sorted.forEach((p,i) => {
     const demPct = p.total > 0 ? (p.dem/p.total)*100 : 0;
     const repPct = p.total > 0 ? (p.rep/p.total)*100 : 0;
@@ -643,13 +699,13 @@ document.querySelectorAll('.tab').forEach(t => {
     html += `<tr>
       <td style="color:var(--dim)">${i+1}</td>
       <td style="font-weight:600">${p.name}</td>
-      <td style="font-size:12px;color:var(--muted)">${p.cat}</td>
+      <td class="hide-mobile" style="font-size:12px;color:var(--muted)">${p.cat}</td>
       <td style="text-align:right;font-weight:700">${fmtM(p.total)}</td>
-      <td style="text-align:right;color:var(--dem)">${fmtM(p.dem)}</td>
-      <td style="text-align:right;color:var(--rep)">${fmtM(p.rep)}</td>
+      <td class="hide-mobile" style="text-align:right;color:var(--dem)">${fmtM(p.dem)}</td>
+      <td class="hide-mobile" style="text-align:right;color:var(--rep)">${fmtM(p.rep)}</td>
       <td><div class="split-bar"><div class="dem-part" style="width:${demPct}%"></div><div class="rep-part" style="width:${repPct}%"></div></div></td>
       <td><span class="badge ${badgeClass}">${p.party}</span></td>
-      <td><span class="source-tag">${p.src}</span></td>
+      <td class="hide-mobile"><span class="source-tag">${p.src}</span></td>
     </tr>`;
   });
   html += '</tbody>';
@@ -663,7 +719,7 @@ document.querySelectorAll('.tab').forEach(t => {
   new Chart(document.getElementById('chartH2H'), {
     type:'bar',
     data: {
-      labels: matchups.map(m => m.cat),
+      labels: matchups.map(m => isSmall && m.cat.length > 18 ? m.cat.slice(0,16)+'..' : m.cat),
       datasets: [
         { label:'Democrat', data: matchups.map(m => m.dVal), backgroundColor:'rgba(74,144,217,0.85)' },
         { label:'Republican', data: matchups.map(m => -m.rVal), backgroundColor:'rgba(217,85,85,0.85)' },
@@ -673,8 +729,8 @@ document.querySelectorAll('.tab').forEach(t => {
       indexAxis:'y', responsive:true,
       plugins:{ tooltip:{ callbacks:{ label:ctx => ctx.dataset.label+': '+fmtM(Math.abs(ctx.raw)) }}},
       scales:{
-        x:{ ticks:{ callback:v => fmtM(Math.abs(v)) }},
-        y:{ ticks:{ font:{ size:11 }}}
+        x:{ ticks:{ callback:v => fmtM(Math.abs(v)), font:{ size: isSmall ? 9 : 11 }}},
+        y:{ ticks:{ font:{ size: isSmall ? 9 : 11 }}}
       }
     }
   });
@@ -729,7 +785,8 @@ document.querySelectorAll('.tab').forEach(t => {
     options: {
       indexAxis:'y', responsive:true,
       plugins:{ tooltip:{ callbacks:{ label:ctx => ctx.dataset.label+': '+fmtM(ctx.raw) }}},
-      scales:{ x:{ stacked:true, ticks:{ callback:v=>fmtM(v) }}, y:{ stacked:true, ticks:{ font:{ size:11 }}}}
+      scales:{ x:{ stacked:true, ticks:{ callback:v=>fmtM(v), font:{ size: isSmall ? 9 : 11 }}},
+        y:{ stacked:true, ticks:{ font:{ size: isSmall ? 9 : 11 }}}}
     }
   });
 
@@ -818,13 +875,13 @@ document.querySelectorAll('.tab').forEach(t => {
   new Chart(document.getElementById('chartMediaBuyers'), {
     type:'bar',
     data: {
-      labels: mediaBuyers.map(m=>m.name),
+      labels: mediaBuyers.map(m => isSmall && m.name.length > 20 ? m.name.slice(0,18)+'..' : m.name),
       datasets:[{ data:mediaBuyers.map(m=>m.total), backgroundColor:mediaBuyers.map(m=>m.color) }]
     },
     options: {
       indexAxis:'y', responsive:true,
       plugins:{ legend:{ display:false }, tooltip:{ callbacks:{ label:ctx => fmtM(ctx.raw) }}},
-      scales:{ x:{ ticks:{ callback:v=>fmtM(v) }}, y:{ ticks:{ font:{ size:11 }}}}
+      scales:{ x:{ ticks:{ callback:v=>fmtM(v), font:{ size: isSmall ? 9 : 11 }}}, y:{ ticks:{ font:{ size: isSmall ? 9 : 11 }}}}
     }
   });
 })();
