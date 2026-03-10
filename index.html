@@ -186,8 +186,8 @@
 <div class="section active" id="sec-overview">
   <div class="kpi-row" id="kpi-row"></div>
   <div class="insight-banner">
-    <div class="insight-title">The Headline Number Is Misleading</div>
-    Democrats appear to outspend Republicans 2.6:1 on campaign tech, but that&rsquo;s driven by one firm &mdash; Waterfront Strategies ($858M), a media buying intermediary. On core tech infrastructure (fundraising platforms, CRM, SMS, data), the split is much more competitive. Republicans actually lead in online fundraising: WinRed + Anedot + Revv ($347M) vs ActBlue ($297M).
+    <div class="insight-title">One Firm Accounts for 41% of All Tracked Spending</div>
+    Waterfront Strategies, a Democratic digital media buying firm, received $858M in FEC-reported disbursements &mdash; more than any other vendor by a factor of 6x. That single line item drives Democrats&rsquo; 2.6:1 overall spending lead. Across all other categories &mdash; fundraising platforms, CRM, SMS, data &mdash; the two parties are far more competitive. Republicans actually lead in online fundraising: WinRed + Anedot + Revv ($347M) vs ActBlue ($297M).
   </div>
   <div class="grid2">
     <div class="card">
@@ -610,8 +610,6 @@ document.querySelectorAll('.tab').forEach(t => {
   });
 
   // Party insights
-  const coreDem = totalDem - 858.4; // subtract Waterfront Strategies
-  const coreRep = totalRep;
   document.getElementById('partyInsights').innerHTML = `
     <div style="margin-bottom:16px;">
       <div style="font-size:12px;color:var(--dim);margin-bottom:4px;text-transform:uppercase;letter-spacing:0.5px;font-weight:500;">Democrat Total</div>
@@ -624,11 +622,10 @@ document.querySelectorAll('.tab').forEach(t => {
       <div style="font-size:12px;color:var(--muted);">${((totalRep/totalAll)*100).toFixed(0)}% of tracked spending</div>
     </div>
     <div style="padding:12px 14px;border-radius:10px;background:var(--surface2);border:1px solid var(--border);">
-      <div style="font-size:10px;color:var(--dim);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:6px;font-weight:600;">Core Tech (excl. Waterfront $858M)</div>
+      <div style="font-size:10px;color:var(--dim);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:6px;font-weight:600;">Biggest Single Recipient</div>
       <div style="font-size:13px;line-height:1.5;">
-        <span style="color:var(--demLight);font-weight:700;">D: $${Math.round(coreDem)}M</span> &nbsp;vs&nbsp;
-        <span style="color:var(--repLight);font-weight:700;">R: $${Math.round(coreRep)}M</span>
-        <span style="color:var(--dim);"> &mdash; much closer than the headline suggests</span>
+        <span style="color:var(--demLight);font-weight:700;">Waterfront Strategies: $858M</span>
+        <span style="color:var(--dim);"> &mdash; Democratic digital media buying firm, 41% of all tracked spending</span>
       </div>
     </div>
   `;
