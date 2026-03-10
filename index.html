@@ -721,14 +721,14 @@ document.querySelectorAll('.tab').forEach(t => {
       labels: matchups.map(m => isSmall && m.cat.length > 18 ? m.cat.slice(0,16)+'..' : m.cat),
       datasets: [
         { label:'Democrat', data: matchups.map(m => m.dVal), backgroundColor:'rgba(74,144,217,0.85)' },
-        { label:'Republican', data: matchups.map(m => -m.rVal), backgroundColor:'rgba(217,85,85,0.85)' },
+        { label:'Republican', data: matchups.map(m => m.rVal), backgroundColor:'rgba(217,85,85,0.85)' },
       ]
     },
     options: {
       indexAxis:'y', responsive:true,
-      plugins:{ tooltip:{ callbacks:{ label:ctx => ctx.dataset.label+': '+fmtM(Math.abs(ctx.raw)) }}},
+      plugins:{ tooltip:{ callbacks:{ label:ctx => ctx.dataset.label+': '+fmtM(ctx.raw) }}},
       scales:{
-        x:{ ticks:{ callback:v => fmtM(Math.abs(v)), font:{ size: isSmall ? 9 : 11 }}},
+        x:{ ticks:{ callback:v => fmtM(v), font:{ size: isSmall ? 9 : 11 }}},
         y:{ ticks:{ font:{ size: isSmall ? 9 : 11 }}}
       }
     }
@@ -745,7 +745,7 @@ document.querySelectorAll('.tab').forEach(t => {
     </div>
     <div class="insight-card" style="border-left:3px solid var(--dem);">
       <h4 style="color:var(--demLight);">SMS / Texting: 23:1 Spending Ratio</h4>
-      <p>Scale to Win ($51M) + Hustle ($1.5M) = $53M vs RumbleUp $2.3M. This is the largest spending asymmetry in the data. Democratic committees reported substantially higher disbursements to P2P texting vendors. Scale to Win charges ~1.5 cents per SMS segment.</p>
+      <p>Scale to Win ($51M) + Hustle ($1.5M) = $53M vs RumbleUp $2.3M. This is the largest spending asymmetry in the data, but warrants caution: Republican texting spending may flow through digital consulting firms (e.g., Targeted Victory) rather than dedicated SMS vendors, or through 501(c)(4) dark money organizations not subject to FEC disclosure. The disparity in tracked SMS spending is a promising area for further investigation.</p>
     </div>
     <div class="insight-card" style="border-left:3px solid var(--amethyst);">
       <h4 style="color:#a78bfa;">Digital Consulting: Distinct Vendor Structures</h4>
