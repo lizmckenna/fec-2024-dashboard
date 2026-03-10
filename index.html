@@ -105,6 +105,30 @@
   .callout-red { background:rgba(203,67,53,0.1); border-left:3px solid var(--rep); }
   .callout-purple { background:rgba(108,52,131,0.1); border-left:3px solid var(--amethyst); }
   .callout-amber { background:rgba(183,149,11,0.1); border-left:3px solid var(--topaz); }
+
+  /* Insight banner */
+  .insight-banner { padding:20px 24px; border-radius:12px; margin-bottom:20px; font-size:13px; line-height:1.7;
+    background:linear-gradient(135deg, rgba(108,52,131,0.15), rgba(26,82,118,0.1));
+    border:1px solid rgba(108,52,131,0.3); }
+  .insight-banner .insight-title { font-size:15px; font-weight:700; margin-bottom:8px; color:#bb8fce; }
+
+  /* Annotation note */
+  .annotation-note { padding:14px 18px; border-radius:10px; margin-bottom:16px; font-size:13px; line-height:1.6;
+    background:rgba(183,149,11,0.08); border:1px solid rgba(183,149,11,0.2); color:var(--muted); }
+  .annotation-note strong { color:var(--topaz); }
+
+  /* Insight cards for detailed analysis */
+  .insight-card { background:var(--surface2); border:1px solid var(--border); border-radius:12px;
+    padding:18px 20px; margin-bottom:12px; }
+  .insight-card h4 { font-size:14px; font-weight:700; margin-bottom:6px; }
+  .insight-card p { font-size:13px; color:var(--muted); line-height:1.6; margin:0; }
+
+  /* Methodology grid */
+  .meth-grid { display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-top:16px; }
+  @media(max-width:768px) { .meth-grid { grid-template-columns:1fr; } }
+  .meth-item { padding:14px 16px; border-radius:10px; font-size:13px; line-height:1.6; border:1px solid var(--border); background:var(--surface); }
+  .meth-item .meth-pct { font-size:22px; font-weight:800; margin-bottom:2px; }
+  .meth-item .meth-label { font-weight:700; font-size:12px; text-transform:uppercase; letter-spacing:0.5px; margin-bottom:6px; color:var(--muted); }
 </style>
 </head>
 <body>
@@ -130,6 +154,10 @@
 <!-- ============ OVERVIEW ============ -->
 <div class="section active" id="sec-overview">
   <div class="kpi-row" id="kpi-row"></div>
+  <div class="insight-banner">
+    <div class="insight-title">The Headline Number Is Misleading</div>
+    Democrats appear to outspend Republicans 2.6:1 on campaign tech, but that&rsquo;s driven by one firm &mdash; Waterfront Strategies ($858M), a media buying intermediary. On core tech infrastructure (fundraising platforms, CRM, SMS, data), the split is much more competitive. Republicans actually lead in online fundraising: WinRed + Anedot + Revv ($347M) vs ActBlue ($297M).
+  </div>
   <div class="grid2">
     <div class="card">
       <h2>Top Providers by Total Spending</h2>
@@ -151,6 +179,9 @@
 
 <!-- ============ ALL PROVIDERS ============ -->
 <div class="section" id="sec-providers">
+  <div class="annotation-note">
+    <strong>How to read this table:</strong> &ldquo;Total&rdquo; reflects FEC-reported disbursements to each vendor from all federal committees during the 2023&ndash;2024 cycle. For platforms like Google and Meta, most campaign spending flows through intermediary media buying firms (not paid directly), so their FEC totals dramatically undercount actual platform spend. See the Digital Ads tab for platform-reported figures.
+  </div>
   <div class="card">
     <h2>All Campaign Tech &amp; Digital Vendors (2024 Cycle)</h2>
     <div style="overflow-x:auto;">
@@ -185,17 +216,23 @@
     </div>
   </div>
   <div class="card">
-    <h2>Structural Insight</h2>
+    <h2>Key Observations</h2>
     <div class="grid2">
-      <div class="callout callout-blue">
-        <strong>Democrats: Centralized Infrastructure</strong><br>
-        The DNC and party committees act as a tech hub, accounting for the largest share of NGP VAN ($75.9M) and EveryAction ($22.6M) spending.
-        Individual campaigns like Harris and Biden channel fundraising through ActBlue but rely on party infra for CRM/data.
+      <div class="insight-card" style="border-left:3px solid var(--rep);">
+        <h4 style="color:var(--repLight);">Trump IS WinRed</h4>
+        <p>Trump&rsquo;s committees account for 99.4% of all WinRed spending ($309M of $311M). No other Republican candidate is a meaningful WinRed client. The platform essentially functions as Trump&rsquo;s fundraising operation with a thin layer of shared infrastructure.</p>
       </div>
-      <div class="callout callout-red">
-        <strong>Republicans: Trump-Centric</strong><br>
-        Trump's committees account for 99.4% of all WinRed spending ($309M of $311M), 47% of Anedot, and 75% of Revv.
-        The GOP data ecosystem (Data Trust + i360) is more decentralized, with 5,000+ campaigns using it independently.
+      <div class="insight-card" style="border-left:3px solid var(--dem);">
+        <h4 style="color:var(--demLight);">The DNC Is the Democratic Tech Hub</h4>
+        <p>DNC and party infrastructure committees account for the largest share of NGP VAN spending ($76M of $79M) and EveryAction ($23M of $29M). Individual Democratic campaigns like Harris and Biden use ActBlue for fundraising but rely on party-level tech infrastructure for CRM and voter data. This is a fundamentally different model from the GOP.</p>
+      </div>
+      <div class="insight-card" style="border-left:3px solid var(--dem);">
+        <h4 style="color:var(--demLight);">Harris Inherited, Then Scaled</h4>
+        <p>Harris&rsquo;s $81M in tech spending across ActBlue ($76M), NGP VAN ($2.6M), and EveryAction ($1.7M) was built on top of Biden&rsquo;s existing infrastructure. Biden&rsquo;s committees show $52M, mostly through ActBlue ($47M). The Biden-to-Harris handoff was the largest mid-cycle campaign tech migration in history.</p>
+      </div>
+      <div class="insight-card" style="border-left:3px solid var(--rep);">
+        <h4 style="color:var(--repLight);">Anedot Is the Down-Ballot R Platform</h4>
+        <p>While WinRed is Trump-dominated, Anedot serves 50+ Republican House and Senate campaigns. Cruz ($1.1M), Moreno ($0.9M), Lake ($0.7M), Ramaswamy ($0.6M), and dozens more. It&rsquo;s the scrappier, more distributed Republican fundraising ecosystem.</p>
       </div>
     </div>
   </div>
@@ -203,16 +240,24 @@
 
 <!-- ============ DIGITAL ADS ============ -->
 <div class="section" id="sec-digital">
-  <div class="callout callout-amber" style="margin-bottom:16px;">
-    <strong>Why FEC numbers look low for ad platforms:</strong> Most campaigns don't pay Facebook/Google directly.
-    They route spending through media buying firms like Waterfront Strategies ($858M) and Targeted Victory ($142M).
-    The $1.35B spent on Meta + Google comes from platform-reported transparency data, not FEC payee records.
-  </div>
   <div class="kpi-row">
     <div class="kpi"><div class="value" style="color:var(--amethyst);">$1.9B</div><div class="label">Total Online Ads (4 platforms)</div></div>
     <div class="kpi"><div class="value" style="color:var(--dem);">$1.35B</div><div class="label">Google + Meta Ads</div></div>
-    <div class="kpi"><div class="value" style="color:var(--demLight);">3:1</div><div class="label">D vs R Online Ratio</div></div>
-    <div class="kpi"><div class="value" style="color:var(--rep);">$858M</div><div class="label">Waterfront Strategies (D)</div></div>
+    <div class="kpi"><div class="value" style="color:var(--demLight);">3:1</div><div class="label">D vs R Digital Ad Ratio</div></div>
+    <div class="kpi"><div class="value" style="color:var(--topaz);">$96M</div><div class="label">FEC Direct to Platforms</div></div>
+  </div>
+  <div class="grid2" style="margin-bottom:16px;">
+    <div class="insight-card" style="border-left:3px solid var(--dem);">
+      <h4 style="color:var(--demLight);">Democrats Outspent Republicans 3:1 on Digital Ads</h4>
+      <p>Harris campaign spent $113M on Meta vs Trump&rsquo;s $17M. On Google/YouTube: Harris $31.5M vs Trump $9.3M. Despite this massive spending advantage, Trump won &mdash; raising questions about the ROI of digital ad spending.</p>
+    </div>
+    <div class="insight-card" style="border-left:3px solid var(--rep);">
+      <h4 style="color:var(--repLight);">Trump Deliberately Spent Less on Digital</h4>
+      <p>The Trump campaign deliberately spent less on digital ads compared to prior cycles, relying instead on massive organic social media reach, earned media, and super PAC spending from billionaire megadonors. This was a strategic choice, not a resource constraint.</p>
+    </div>
+  </div>
+  <div class="callout callout-amber" style="margin-bottom:16px;">
+    <strong>Why FEC numbers undercount platform spending:</strong> Most campaigns don&rsquo;t pay Facebook or Google directly. They pay media buying firms (Waterfront Strategies, Targeted Victory, etc.) who then place the ads. So FEC records show a $858M payment to &ldquo;Waterfront Strategies&rdquo; rather than $858M to &ldquo;Meta.&rdquo; The platform-reported transparency data ($1.35B on Google+Meta) comes from a completely different data pipeline than FEC filings. Only $96M of the $1.35B in platform-reported spending appears as direct vendor payments in FEC data &mdash; the other 93% flows through intermediary firms.
   </div>
   <div class="grid2">
     <div class="card">
@@ -241,6 +286,41 @@
       (platform-reported political ad transparency data from Meta, Google, Snap, and X).
     </div>
     <div id="coverageBars"></div>
+    <div class="meth-grid" style="margin-top:20px;">
+      <div class="meth-item">
+        <div class="meth-pct" style="color:var(--emerald);">~99%</div>
+        <div class="meth-label">Fundraising Platforms</div>
+        <p style="font-size:12px;color:var(--muted);margin:0;">ActBlue, WinRed, Anedot, and Revv cover virtually all online fundraising infrastructure.</p>
+      </div>
+      <div class="meth-item">
+        <div class="meth-pct" style="color:var(--dem);">~98%</div>
+        <div class="meth-label">Democratic CRM</div>
+        <p style="font-size:12px;color:var(--muted);margin:0;">NGP VAN + EveryAction are the only major D platforms.</p>
+      </div>
+      <div class="meth-item">
+        <div class="meth-pct" style="color:var(--rep);">~57%</div>
+        <div class="meth-label">Republican CRM</div>
+        <p style="font-size:12px;color:var(--muted);margin:0;">Data Trust + i360 are tracked, but Campaign Sidekick (44% usage) and Advantage (27% usage) aren&rsquo;t in our FEC totals because spending falls below capture threshold or is bundled into party committee overhead.</p>
+      </div>
+      <div class="meth-item">
+        <div class="meth-pct" style="color:var(--amethyst);">~73%</div>
+        <div class="meth-label">Digital Consulting</div>
+        <p style="font-size:12px;color:var(--muted);margin:0;">We have the top 6 firms but there are dozens of smaller shops ($1&ndash;5M each) not tracked.</p>
+      </div>
+      <div class="meth-item">
+        <div class="meth-pct" style="color:var(--topaz);">~69%</div>
+        <div class="meth-label">SMS / Texting</div>
+        <p style="font-size:12px;color:var(--muted);margin:0;">Scale to Win, RumbleUp, and Hustle are tracked. Missing: Tatango (mass SMS), Opn Sesame (P2P), Civic Shout (lead gen).</p>
+      </div>
+      <div class="meth-item">
+        <div class="meth-pct" style="color:var(--rose);">~7%</div>
+        <div class="meth-label">Digital Ad Platforms (FEC Direct)</div>
+        <p style="font-size:12px;color:var(--muted);margin:0;">Only $96M of the $1.35B in platform-reported spending appears as direct vendor payments in FEC data. The other 93% flows through intermediary firms.</p>
+      </div>
+    </div>
+    <div class="callout callout-purple" style="margin-top:16px;">
+      <strong>Completely not tracked:</strong> TV/radio ($5B+), direct mail, field operations, smaller consulting firms, state/local campaign tech, and $1.9B in dark money spending that isn&rsquo;t subject to FEC disclosure.
+    </div>
   </div>
 
   <div class="card">
@@ -410,6 +490,10 @@ Chart.defaults.plugins.legend.labels.pointStyle = 'circle';
 
 const fmtM = v => '$' + v.toFixed(1) + 'M';
 const fmtB = v => '$' + (v/1000).toFixed(2) + 'B';
+const fmtKPI = v => {
+  if (v >= 1000) return '$' + (v/1000).toFixed(2) + 'B';
+  return '$' + Math.round(v).toLocaleString('en-US') + 'M';
+};
 
 // ============================================================
 // TAB SWITCHING
@@ -433,9 +517,9 @@ document.querySelectorAll('.tab').forEach(t => {
 
   // KPIs
   document.getElementById('kpi-row').innerHTML = [
-    { val: fmtB(totalAll*1000000), label:'Total Tracked Spending', color:'var(--amethyst)' },
-    { val: fmtB(totalDem*1000000), label:'Democratic Spending', color:'var(--dem)' },
-    { val: fmtB(totalRep*1000000), label:'Republican Spending', color:'var(--rep)' },
+    { val: fmtKPI(totalAll), label:'Total Tracked Spending', color:'var(--amethyst)' },
+    { val: fmtKPI(totalDem), label:'Democratic Spending', color:'var(--dem)' },
+    { val: fmtKPI(totalRep), label:'Republican Spending', color:'var(--rep)' },
     { val: providers.length, label:'Vendors Tracked', color:'var(--topaz)' },
     { val: '6', label:'Categories', color:'var(--teal)' },
   ].map(k => `<div class="kpi"><div class="value" style="color:${k.color}">${k.val}</div><div class="label">${k.label}</div></div>`).join('');
@@ -495,20 +579,26 @@ document.querySelectorAll('.tab').forEach(t => {
   });
 
   // Party insights
+  const coreDem = totalDem - 858.4; // subtract Waterfront Strategies
+  const coreRep = totalRep;
   document.getElementById('partyInsights').innerHTML = `
     <div style="margin-bottom:16px;">
       <div style="font-size:13px;color:var(--muted);margin-bottom:6px;">Democrat Total</div>
-      <div style="font-size:28px;font-weight:800;color:var(--dem);">${fmtB(totalDem*1000000)}</div>
-      <div style="font-size:12px;color:var(--muted);">${((totalDem/totalAll)*100).toFixed(1)}% of tracked spending</div>
+      <div style="font-size:28px;font-weight:800;color:var(--dem);">${fmtKPI(totalDem)}</div>
+      <div style="font-size:12px;color:var(--muted);">${((totalDem/totalAll)*100).toFixed(0)}% of tracked spending</div>
     </div>
     <div style="margin-bottom:16px;">
       <div style="font-size:13px;color:var(--muted);margin-bottom:6px;">Republican Total</div>
-      <div style="font-size:28px;font-weight:800;color:var(--rep);">${fmtB(totalRep*1000000)}</div>
-      <div style="font-size:12px;color:var(--muted);">${((totalRep/totalAll)*100).toFixed(1)}% of tracked spending</div>
+      <div style="font-size:28px;font-weight:800;color:var(--rep);">${fmtKPI(totalRep)}</div>
+      <div style="font-size:12px;color:var(--muted);">${((totalRep/totalAll)*100).toFixed(0)}% of tracked spending</div>
     </div>
-    <div style="font-size:12px;color:var(--muted);line-height:1.6;">
-      Democrats dominate tracked tech spending primarily due to <strong>Waterfront Strategies</strong> ($858M media buying).
-      When excluding media buying intermediaries, the fundraising platform split is nearly even (ActBlue $297M vs WinRed $311M).
+    <div style="padding:10px 14px;border-radius:8px;background:rgba(108,52,131,0.1);border:1px solid rgba(108,52,131,0.2);margin-bottom:10px;">
+      <div style="font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:4px;">Core Tech (excl. Waterfront $858M)</div>
+      <div style="font-size:12px;line-height:1.5;">
+        <span style="color:var(--demLight);font-weight:700;">D: $${Math.round(coreDem)}M</span> &nbsp;vs&nbsp;
+        <span style="color:var(--repLight);font-weight:700;">R: $${Math.round(coreRep)}M</span>
+        &mdash; <span style="color:var(--muted);">much closer than the headline suggests</span>
+      </div>
     </div>
   `;
 })();
@@ -561,13 +651,28 @@ document.querySelectorAll('.tab').forEach(t => {
     }
   });
 
-  const insights = [
-    { title:'Democrats dominate media buying', body:`Waterfront Strategies alone ($858M) dwarfs all Republican consulting firms combined ($219M). This reflects Democrats' centralized ad-buying approach through GMMB/Waterfront.`, cls:'callout-blue' },
-    { title:'Fundraising platforms nearly even', body:`WinRed ($311M) slightly edges ActBlue ($297M), but when you add Anedot ($29M) and Revv ($7M), the GOP has a $54M advantage in online fundraising infrastructure.`, cls:'callout-red' },
-    { title:'Democrats lead in SMS 23:1', body:`Scale to Win ($51.4M) + Hustle ($1.5M) vs RumbleUp ($2.3M). Democratic campaigns invested heavily in peer-to-peer texting as a voter contact channel.`, cls:'callout-blue' },
-    { title:'Republican data is undercounted', body:`GOP Data Trust ($7M) + i360 ($4.3M) appear small vs NGP VAN ($79M), but R data infra is subsidized by Koch network and RNC, reducing FEC-visible costs.`, cls:'callout-red' },
-  ];
-  document.getElementById('h2hInsightCards').innerHTML = insights.map(i => `<div class="callout ${i.cls}"><strong>${i.title}</strong><br>${i.body}</div>`).join('');
+  document.getElementById('h2hInsightCards').innerHTML = `
+    <div class="insight-card" style="border-left:3px solid var(--rep);">
+      <h4 style="color:var(--repLight);">Fundraising: GOP Has the Edge</h4>
+      <p>WinRed ($311M) + Anedot ($29M) + Revv ($7M) = $347M vs ActBlue&rsquo;s $297M. Republicans have a $50M advantage in online fundraising infrastructure. Anedot is especially popular with down-ballot R candidates &mdash; 50+ House/Senate campaigns use it.</p>
+    </div>
+    <div class="insight-card" style="border-left:3px solid var(--amethyst);">
+      <h4 style="color:#bb8fce;">CRM / Voter Data: Dems Centralize, GOP Fragments</h4>
+      <p>NGP VAN ($79M) + EveryAction ($29M) = $108M all flowing to one parent company (Bonterra). Republicans distribute across Data Trust ($7M) + i360 ($4.3M) + Campaign Sidekick + Advantage = ~$15M visible in FEC. But R data infra is heavily subsidized &mdash; Koch network funds i360, and Data Trust is partially funded through RNC infrastructure. The $108M vs $15M gap overstates the actual capability difference. Data Trust served 5,000+ campaigns in 2024; i360 covers 270M voter profiles.</p>
+    </div>
+    <div class="insight-card" style="border-left:3px solid var(--dem);">
+      <h4 style="color:var(--demLight);">SMS / Texting: Democrats Dominate 23:1</h4>
+      <p>Scale to Win ($51M) + Hustle ($1.5M) = $53M vs RumbleUp $2.3M. This is the single biggest asymmetry in the data. Democrats invested heavily in peer-to-peer texting as a primary voter contact channel. Scale to Win charges ~2 cents per text.</p>
+    </div>
+    <div class="insight-card" style="border-left:3px solid var(--amethyst);">
+      <h4 style="color:#bb8fce;">Digital Consulting: Money Follows Different Paths</h4>
+      <p>Democrat spending routes through fewer, larger firms: Waterfront Strategies ($858M) and Bully Pulpit ($116M). Republican spending is spread across Targeted Victory ($142M), Majority Strategies ($33M), Push Digital ($30M), Axiom Strategies ($14M). This reflects different party structures &mdash; Democrats centralize ad buying through GMMB/Waterfront, while Republicans use a more competitive vendor market.</p>
+    </div>
+    <div class="insight-card" style="border-left:3px solid var(--rep);">
+      <h4 style="color:var(--repLight);">The Republican CRM Pricing Puzzle</h4>
+      <p>NGP VAN charges ~$45&ndash;$1,680/race depending on district size, with state parties as intermediaries. i360 starts at ~$99/month. GOP Data Trust doesn&rsquo;t publish pricing but emphasizes being &ldquo;most cost-effective.&rdquo; The FEC spending gap ($108M D vs $15M R) isn&rsquo;t a capability gap &mdash; it&rsquo;s a pricing and subsidy structure difference. Republican data infrastructure costs are absorbed by party committees and Koch network funding rather than showing up as individual campaign disbursements.</p>
+    </div>
+  `;
 })();
 
 // ============================================================
