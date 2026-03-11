@@ -119,7 +119,7 @@
     background:var(--surface); border:1px solid var(--border); position:relative; overflow:hidden; }
   .insight-banner::before { content:''; position:absolute; top:0; left:0; right:0; height:3px;
     background:linear-gradient(90deg, var(--accent), var(--amethyst)); }
-  .insight-banner .insight-title { font-size:14px; font-weight:600; margin-bottom:8px; color:var(--accent); letter-spacing:-0.01em; }
+  .insight-banner .insight-title { font-size:14px; font-weight:600; margin-bottom:8px; color:var(--text); letter-spacing:-0.01em; }
 
   /* Annotation note */
   .annotation-note { padding:14px 18px; border-radius:10px; margin-bottom:16px; font-size:13px; line-height:1.6;
@@ -213,9 +213,63 @@
 
 <!-- HEADER -->
 <div class="header">
+  <div style="margin-bottom:16px;">
+    <svg viewBox="0 0 100 100" width="48" height="48">
+      <circle cx="50" cy="50" r="6" fill="#5371ff"/>
+      <circle cx="50" cy="25" r="4" fill="#5371ff"/>
+      <circle cx="71.65" cy="37.5" r="4" fill="#5371ff"/>
+      <circle cx="71.65" cy="62.5" r="4" fill="#5371ff"/>
+      <circle cx="50" cy="75" r="4" fill="#5371ff"/>
+      <circle cx="28.35" cy="62.5" r="4" fill="#5371ff"/>
+      <circle cx="28.35" cy="37.5" r="4" fill="#5371ff"/>
+      <line x1="50" y1="50" x2="50" y2="25" stroke="#5371ff" stroke-width="1.5"/>
+      <line x1="50" y1="50" x2="71.65" y2="37.5" stroke="#5371ff" stroke-width="1.5"/>
+      <line x1="50" y1="50" x2="71.65" y2="62.5" stroke="#5371ff" stroke-width="1.5"/>
+      <line x1="50" y1="50" x2="50" y2="75" stroke="#5371ff" stroke-width="1.5"/>
+      <line x1="50" y1="50" x2="28.35" y2="62.5" stroke="#5371ff" stroke-width="1.5"/>
+      <line x1="50" y1="50" x2="28.35" y2="37.5" stroke="#5371ff" stroke-width="1.5"/>
+      <circle cx="50" cy="10" r="2.5" fill="#5371ff" opacity="0.6"/>
+      <circle cx="40" cy="15" r="2.5" fill="#5371ff" opacity="0.6"/>
+      <circle cx="60" cy="15" r="2.5" fill="#5371ff" opacity="0.6"/>
+      <circle cx="85" cy="30" r="2.5" fill="#5371ff" opacity="0.6"/>
+      <circle cx="82" cy="45" r="2.5" fill="#5371ff" opacity="0.6"/>
+      <circle cx="85" cy="70" r="2.5" fill="#5371ff" opacity="0.6"/>
+      <circle cx="82" cy="55" r="2.5" fill="#5371ff" opacity="0.6"/>
+      <circle cx="50" cy="90" r="2.5" fill="#5371ff" opacity="0.6"/>
+      <circle cx="40" cy="85" r="2.5" fill="#5371ff" opacity="0.6"/>
+      <circle cx="60" cy="85" r="2.5" fill="#5371ff" opacity="0.6"/>
+      <circle cx="15" cy="70" r="2.5" fill="#5371ff" opacity="0.6"/>
+      <circle cx="18" cy="55" r="2.5" fill="#5371ff" opacity="0.6"/>
+      <circle cx="15" cy="30" r="2.5" fill="#5371ff" opacity="0.6"/>
+      <circle cx="18" cy="45" r="2.5" fill="#5371ff" opacity="0.6"/>
+      <line x1="50" y1="25" x2="50" y2="10" stroke="#5371ff" stroke-width="1" opacity="0.5"/>
+      <line x1="50" y1="25" x2="40" y2="15" stroke="#5371ff" stroke-width="1" opacity="0.5"/>
+      <line x1="50" y1="25" x2="60" y2="15" stroke="#5371ff" stroke-width="1" opacity="0.5"/>
+      <line x1="71.65" y1="37.5" x2="85" y2="30" stroke="#5371ff" stroke-width="1" opacity="0.5"/>
+      <line x1="71.65" y1="37.5" x2="82" y2="45" stroke="#5371ff" stroke-width="1" opacity="0.5"/>
+      <line x1="71.65" y1="62.5" x2="85" y2="70" stroke="#5371ff" stroke-width="1" opacity="0.5"/>
+      <line x1="71.65" y1="62.5" x2="82" y2="55" stroke="#5371ff" stroke-width="1" opacity="0.5"/>
+      <line x1="50" y1="75" x2="50" y2="90" stroke="#5371ff" stroke-width="1" opacity="0.5"/>
+      <line x1="50" y1="75" x2="40" y2="85" stroke="#5371ff" stroke-width="1" opacity="0.5"/>
+      <line x1="50" y1="75" x2="60" y2="85" stroke="#5371ff" stroke-width="1" opacity="0.5"/>
+      <line x1="28.35" y1="62.5" x2="15" y2="70" stroke="#5371ff" stroke-width="1" opacity="0.5"/>
+      <line x1="28.35" y1="62.5" x2="18" y2="55" stroke="#5371ff" stroke-width="1" opacity="0.5"/>
+      <line x1="28.35" y1="37.5" x2="15" y2="30" stroke="#5371ff" stroke-width="1" opacity="0.5"/>
+      <line x1="28.35" y1="37.5" x2="18" y2="45" stroke="#5371ff" stroke-width="1" opacity="0.5"/>
+    </svg>
+  </div>
   <h1>2024 Campaign Tech &amp; Digital Spending</h1>
   <p>FEC Disbursement Data &bull; Federal Election Commission &bull; 2023-2024 Cycle</p>
   <div class="subtitle">Sources: FEC OpenFEC API, OpenSecrets vendor profiles, Brennan Center / Wesleyan Media Project</div>
+</div>
+
+<!-- FRAMING -->
+<div class="card" style="margin-bottom:clamp(16px,3vw,24px);line-height:1.8;font-size:14px;color:var(--muted);">
+  <p style="margin-bottom:14px;">In the 2024 election cycle, federal candidates, parties, and PACs brought in and spent more than $24 billion. Democrats outraised Republicans, though that comparison does not capture all outside spending, including super PAC expenditures.</p>
+  <p style="margin-bottom:14px;">This dashboard focuses on one narrower but increasingly important piece of that broader political economy: <strong style="color:var(--text);">digital and civic-tech spending</strong>.</p>
+  <p style="margin-bottom:14px;">That focus is analytically useful because campaigning now relies heavily on privately owned digital infrastructure. Adam Sheingate&rsquo;s (2016) account of the &ldquo;business of politics&rdquo; is helpful here: campaigns are not only electoral organizations but also markets for specialized political services. [<a href="https://global.oup.com/academic/product/building-a-business-of-politics-9780190692155?cc=us&lang=en&" target="_blank">Sheingate, <em>Building a Business of Politics</em></a>]</p>
+  <p style="margin-bottom:14px;">From that perspective, digital and civic-tech vendors matter not just because they absorb significant resources, but because they shape how campaigns know, classify, and retain their publics. These tools can generate powerful private assets while making it harder to build shared civic infrastructure, cumulative datasets, and research tools oriented toward democratic learning rather than client retention.</p>
+  <p>Looking at these vendors helps show how campaign resources are routed through firms that monetize political infrastructure and accumulate organizational data, even when those expenditures do not build durable civic capacity for citizens themselves.</p>
 </div>
 
 <!-- TABS -->
@@ -296,19 +350,19 @@
     <h2>Key Observations</h2>
     <div class="grid2">
       <div class="insight-card" style="border-left:3px solid var(--rep);">
-        <h4 style="color:var(--repLight);">WinRed Spending Concentrated in Trump Committees</h4>
+        <h4 style="color:var(--text);">WinRed Spending Concentrated in Trump Committees</h4>
         <p>Trump&rsquo;s committees account for 99.4% of all WinRed spending ($309M of $311M). No other Republican candidate appears as a significant WinRed client in FEC disbursement data, suggesting the platform functions primarily as Trump campaign fundraising infrastructure.</p>
       </div>
       <div class="insight-card" style="border-left:3px solid var(--dem);">
-        <h4 style="color:var(--demLight);">DNC Committees Account for Most CRM Spending</h4>
+        <h4 style="color:var(--text);">DNC Committees Account for Most CRM Spending</h4>
         <p>DNC and party infrastructure committees account for the largest share of NGP VAN spending ($76M of $79M) and EveryAction ($23M of $29M). Individual Democratic campaigns like Harris and Biden use ActBlue for fundraising but rely on party-level infrastructure for CRM and voter data &mdash; a centralized model distinct from the Republican approach.</p>
       </div>
       <div class="insight-card" style="border-left:3px solid var(--dem);">
-        <h4 style="color:var(--demLight);">Biden-to-Harris Infrastructure Transfer</h4>
+        <h4 style="color:var(--text);">Biden-to-Harris Infrastructure Transfer</h4>
         <p>Harris&rsquo;s $81M in tech spending across ActBlue ($76M), NGP VAN ($2.6M), and EveryAction ($1.7M) built on Biden&rsquo;s existing vendor relationships. Biden&rsquo;s committees show $52M, mostly through ActBlue ($47M). The mid-cycle transition represented a large-scale migration of campaign technology infrastructure between candidates.</p>
       </div>
       <div class="insight-card" style="border-left:3px solid var(--rep);">
-        <h4 style="color:var(--repLight);">Anedot Is the Down-Ballot R Platform</h4>
+        <h4 style="color:var(--text);">Anedot Is the Down-Ballot R Platform</h4>
         <p>While WinRed spending is concentrated in Trump committees, Anedot serves 50+ Republican House and Senate campaigns: Cruz ($1.1M), Moreno ($0.9M), Lake ($0.7M), Ramaswamy ($0.6M), and dozens more. Anedot represents a more distributed pattern of Republican fundraising platform adoption.</p>
       </div>
     </div>
@@ -318,18 +372,18 @@
 <!-- ============ DIGITAL ADS ============ -->
 <div class="section" id="sec-digital">
   <div class="kpi-row">
-    <div class="kpi"><div class="value" style="color:var(--amethyst);">$1.9B</div><div class="label">Total Online Ads (4 platforms)</div></div>
-    <div class="kpi"><div class="value" style="color:var(--dem);">$1.35B</div><div class="label">Google + Meta Ads</div></div>
-    <div class="kpi"><div class="value" style="color:var(--accent);">3:1</div><div class="label">D vs R Digital Ad Ratio</div></div>
-    <div class="kpi"><div class="value" style="color:var(--topaz);">$96M</div><div class="label">FEC Direct to Platforms</div></div>
+    <div class="kpi"><div class="value" style="color:var(--text);">$1.9B</div><div class="label">Total Online Ads (4 platforms)</div></div>
+    <div class="kpi"><div class="value" style="color:var(--text);">$1.35B</div><div class="label">Google + Meta Ads</div></div>
+    <div class="kpi"><div class="value" style="color:var(--text);">3:1</div><div class="label">D vs R Digital Ad Ratio</div></div>
+    <div class="kpi"><div class="value" style="color:var(--text);">$96M</div><div class="label">FEC Direct to Platforms</div></div>
   </div>
   <div class="grid2" style="margin-bottom:16px;">
     <div class="insight-card" style="border-left:3px solid var(--dem);">
-      <h4 style="color:var(--demLight);">Democratic Digital Ad Spending Exceeded Republican by ~3:1</h4>
+      <h4 style="color:var(--text);">Democratic Digital Ad Spending Exceeded Republican by ~3:1</h4>
       <p>Harris campaign spent $113M on Meta vs Trump&rsquo;s $17M. On Google/YouTube: Harris $31.5M vs Trump $9.3M. The scale of this spending disparity, combined with the election outcome, has prompted debate among practitioners about the relationship between digital ad volume and electoral returns.</p>
     </div>
     <div class="insight-card" style="border-left:3px solid var(--rep);">
-      <h4 style="color:var(--repLight);">Lower Trump Campaign Digital Ad Spending</h4>
+      <h4 style="color:var(--text);">Lower Trump Campaign Digital Ad Spending</h4>
       <p>The Trump campaign reported lower digital ad spending compared to prior cycles. Reporting suggests the campaign relied more on organic social media reach, earned media coverage, and super PAC expenditures, though the relative contribution of each channel is difficult to measure from FEC data alone.</p>
     </div>
   </div>
@@ -459,6 +513,39 @@
       <strong>Center for Campaign Innovation:</strong> 2024 post-election Republican technology survey data.
     </p>
   </div>
+</div>
+
+<!-- FOOTER -->
+<div style="margin-top:40px;padding:32px 24px;border-top:1px solid var(--border);text-align:center;">
+  <div style="margin-bottom:12px;">
+    <svg viewBox="0 0 100 100" width="32" height="32">
+      <circle cx="50" cy="50" r="6" fill="#5371ff"/>
+      <circle cx="50" cy="25" r="4" fill="#5371ff"/>
+      <circle cx="71.65" cy="37.5" r="4" fill="#5371ff"/>
+      <circle cx="71.65" cy="62.5" r="4" fill="#5371ff"/>
+      <circle cx="50" cy="75" r="4" fill="#5371ff"/>
+      <circle cx="28.35" cy="62.5" r="4" fill="#5371ff"/>
+      <circle cx="28.35" cy="37.5" r="4" fill="#5371ff"/>
+      <line x1="50" y1="50" x2="50" y2="25" stroke="#5371ff" stroke-width="1.5"/>
+      <line x1="50" y1="50" x2="71.65" y2="37.5" stroke="#5371ff" stroke-width="1.5"/>
+      <line x1="50" y1="50" x2="71.65" y2="62.5" stroke="#5371ff" stroke-width="1.5"/>
+      <line x1="50" y1="50" x2="50" y2="75" stroke="#5371ff" stroke-width="1.5"/>
+      <line x1="50" y1="50" x2="28.35" y2="62.5" stroke="#5371ff" stroke-width="1.5"/>
+      <line x1="50" y1="50" x2="28.35" y2="37.5" stroke="#5371ff" stroke-width="1.5"/>
+      <line x1="50" y1="25" x2="50" y2="10" stroke="#5371ff" stroke-width="1" opacity="0.5"/>
+      <line x1="50" y1="25" x2="40" y2="15" stroke="#5371ff" stroke-width="1" opacity="0.5"/>
+      <line x1="50" y1="25" x2="60" y2="15" stroke="#5371ff" stroke-width="1" opacity="0.5"/>
+      <circle cx="50" cy="10" r="2.5" fill="#5371ff" opacity="0.6"/>
+      <circle cx="40" cy="15" r="2.5" fill="#5371ff" opacity="0.6"/>
+      <circle cx="60" cy="15" r="2.5" fill="#5371ff" opacity="0.6"/>
+    </svg>
+  </div>
+  <div style="font-size:13px;color:var(--muted);margin-bottom:6px;">
+    <a href="https://lizmckenna.github.io/groundwork-pitch/" target="_blank">Groundwork Pitch Deck</a>
+    &nbsp;&bull;&nbsp;
+    <a href="https://lizmckenna.github.io/groundwork-pitch/memo.html" target="_blank">Companion Memo</a>
+  </div>
+  <div style="font-size:11px;color:var(--dim);">Elizabeth McKenna &bull; Harvard Kennedy School &bull; 2026</div>
 </div>
 
 </div><!-- /container -->
@@ -599,11 +686,11 @@ document.querySelectorAll('.tab').forEach(t => {
 
   // KPIs
   document.getElementById('kpi-row').innerHTML = [
-    { val: fmtKPI(totalAll), label:'Total Tracked Spending', color:'var(--accent)' },
+    { val: fmtKPI(totalAll), label:'Total Tracked Spending', color:'var(--text)' },
     { val: fmtKPI(totalDem), label:'Democratic Spending', color:'var(--dem)' },
     { val: fmtKPI(totalRep), label:'Republican Spending', color:'var(--rep)' },
-    { val: providers.length, label:'Vendors Tracked', color:'var(--topaz)' },
-    { val: '6', label:'Categories', color:'var(--teal)' },
+    { val: providers.length, label:'Vendors Tracked', color:'var(--text)' },
+    { val: '6', label:'Categories', color:'var(--text)' },
   ].map(k => `<div class="kpi"><div class="value" style="color:${k.color}">${k.val}</div><div class="label">${k.label}</div></div>`).join('');
 
   // Top providers bar chart
@@ -736,23 +823,23 @@ document.querySelectorAll('.tab').forEach(t => {
 
   document.getElementById('h2hInsightCards').innerHTML = `
     <div class="insight-card" style="border-left:3px solid var(--rep);">
-      <h4 style="color:var(--repLight);">Fundraising: Republican Platforms Show Higher FEC-Reported Spending</h4>
+      <h4 style="color:var(--text);">Fundraising: Republican Platforms Show Higher FEC-Reported Spending</h4>
       <p>WinRed ($311M) + Anedot ($29M) + Revv ($7M) = $347M vs ActBlue&rsquo;s $297M. Republican committees reported $50M more in disbursements to fundraising platforms. Anedot serves 50+ House/Senate campaigns, functioning as the primary down-ballot Republican fundraising platform.</p>
     </div>
     <div class="insight-card" style="border-left:3px solid var(--amethyst);">
-      <h4 style="color:#a78bfa;">CRM / Voter Data: Contrasting Organizational Models</h4>
+      <h4 style="color:var(--text);">CRM / Voter Data: Contrasting Organizational Models</h4>
       <p>NGP VAN ($79M) + EveryAction ($29M) = $108M, all flowing to one parent company (Bonterra). Republican spending is distributed across Data Trust ($7M) + i360 ($4.3M) + Campaign Sidekick + Advantage = ~$15M visible in FEC data. However, portions of Republican data infrastructure are subsidized through party committees and affiliated networks, meaning FEC disbursements likely understate actual resource allocation. Data Trust reported serving 5,000+ campaigns in 2024; i360 covers 270M voter profiles.</p>
     </div>
     <div class="insight-card" style="border-left:3px solid var(--dem);">
-      <h4 style="color:var(--demLight);">SMS / Texting: 23:1 Spending Ratio</h4>
+      <h4 style="color:var(--text);">SMS / Texting: 23:1 Spending Ratio</h4>
       <p>Scale to Win ($51M) + Hustle ($1.5M) = $53M vs RumbleUp $2.3M. This is the largest spending asymmetry in the data, but warrants caution: Republican texting spending may flow through digital consulting firms (e.g., Targeted Victory) rather than dedicated SMS vendors, or through 501(c)(4) dark money organizations not subject to FEC disclosure. The disparity in tracked SMS spending is a promising area for further investigation.</p>
     </div>
     <div class="insight-card" style="border-left:3px solid var(--amethyst);">
-      <h4 style="color:#a78bfa;">Digital Consulting: Distinct Vendor Structures</h4>
+      <h4 style="color:var(--text);">Digital Consulting: Distinct Vendor Structures</h4>
       <p>Among digital consulting firms tracked here, Republican spending is spread across Targeted Victory ($142M), Majority Strategies ($33M), Push Digital ($30M), and Axiom Strategies ($14M) = $219M total. Democrats show $116M through Bully Pulpit Interactive. Note: TV-dominant media buying firms (Waterfront Strategies on D side, National Media on R side) are excluded from this dashboard to focus on digital-native technology.</p>
     </div>
     <div class="insight-card" style="border-left:3px solid var(--rep);">
-      <h4 style="color:var(--repLight);">CRM Spending Gap Reflects Structural Differences, Not Necessarily Capacity</h4>
+      <h4 style="color:var(--text);">CRM Spending Gap Reflects Structural Differences, Not Necessarily Capacity</h4>
       <p>The $108M (D) vs $15M (R) gap in FEC-reported CRM spending reflects different pricing, subsidy, and organizational structures rather than a straightforward difference in data infrastructure capacity. Republican voter data costs are partially absorbed by party committees and affiliated network funding, reducing their visibility in individual campaign disbursements. Published pricing varies widely across platforms and is difficult to compare directly.</p>
     </div>
   `;
